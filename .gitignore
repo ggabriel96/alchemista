@@ -1,8 +1,9 @@
-*.pyc
-.vscode
 *.egg-info
-.mypy_cache
-dist
+*.pyc
 .coverage
+.idea
+.mypy_cache
+.vscode
 coverage.xml
+dist
 htmlcov
