@@ -27,12 +27,14 @@ class FieldKwargs(TypedDict):
 
 
 def infer_python_type(column: Column) -> Optional[type]:
-    if hasattr(column.type, "impl"):
-        if hasattr(column.type.impl, "python_type"):
-            return column.type.impl.python_type
-    elif hasattr(column.type, "python_type"):
-        return column.type.python_type
-    raise RuntimeError(f"Could not infer `python_type` for {column}")
+    try:
+        if hasattr(column.type, "impl"):
+            if hasattr(column.type.impl, "python_type"):
+                return column.type.impl.python_type
+        elif hasattr(column.type, "python_type"):
+            return column.type.python_type
+    except NotImplementedError as nie:
+        raise RuntimeError(f"Could not infer `python_type` for {column}") from nie
 
 
 def make_field(column: Column) -> Field:
