@@ -4,7 +4,7 @@ from pydantic import BaseConfig, BaseModel, create_model
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.properties import ColumnProperty
 
-from pydantic_sqlalchemy.field import infer_python_type
+from pydantic_sqlalchemy.field import infer_python_type, make_field
 
 
 class OrmConfig(BaseConfig):
@@ -23,10 +23,8 @@ def sqlalchemy_to_pydantic(
                 continue
             column = attr.columns[0]
             python_type = infer_python_type(column)
-            default = None
-            if column.default is None and not column.nullable:
-                default = ...
-            fields[name] = (python_type, default)
+            field = make_field(column)
+            fields[name] = (python_type, field)
     pydantic_model = create_model(
         db_model.__name__, __config__=config, **fields  # type: ignore
     )
