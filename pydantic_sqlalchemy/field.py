@@ -52,5 +52,10 @@ def make_field(column: Column) -> Field:
     for key in FieldKwargs.__annotations__.keys():
         if key in column.info:
             field_kwargs[key] = column.info[key]
+
+    if "default_factory" not in field_kwargs and column.default and column.default.is_callable:
+        field_kwargs["default_factory"] = column.default.arg.__wrapped__
+        return Field(**field_kwargs)
+
     default = _get_default(column)
     return Field(default, **field_kwargs)
