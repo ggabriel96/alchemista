@@ -37,30 +37,20 @@ def infer_python_type(column: Column) -> Optional[type]:
         raise RuntimeError(f"Could not infer `python_type` for {column}") from nie
 
 
+def _get_default(column: Column) -> Any:
+    if column.default:
+        # can't join these `if` or else an optional field will end without a default value
+        if column.default.is_scalar:
+            return column.default.arg
+    elif column.nullable is False:
+        return ...
+    return None
+
+
 def make_field(column: Column) -> Field:
-    field_kwargs = FieldKwargs(
-        alias=column.info.get("alias"),
-        allow_mutation=column.info.get("allow_mutation"),
-        const=column.info.get("const"),
-        default_factory=column.info.get("default_factory"),
-        description=column.info.get("description"),
-        example=column.info.get("example"),
-        ge=column.info.get("ge"),
-        gt=column.info.get("gt"),
-        le=column.info.get("le"),
-        lt=column.info.get("lt"),
-        max_items=column.info.get("max_items"),
-        max_length=column.info.get("max_length"),
-        min_items=column.info.get("min_items"),
-        min_length=column.info.get("min_length"),
-        multiple_of=column.info.get("multiple_of"),
-        regex=column.info.get("regex"),
-        title=column.info.get("title"),
-    )
-    default = column.info.get("default")
-    if default is None:
-        if column.default is not None:
-            default = column.default
-        elif column.nullable is False:
-            default = ...
+    field_kwargs = FieldKwargs()
+    for key in FieldKwargs.__annotations__.keys():
+        if key in column.info:
+            field_kwargs[key] = column.info[key]
+    default = _get_default(column)
     return Field(default, **field_kwargs)
