@@ -6,7 +6,7 @@ from sqlalchemy import Column
 from typing_extensions import TypedDict
 
 
-class FieldKwargs(TypedDict):
+class FieldKwargs(TypedDict, total=False):
     alias: Optional[str]
     allow_mutation: Optional[bool]
     const: Optional[Any]
