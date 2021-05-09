@@ -462,3 +462,31 @@ def test_all_pydantic_attributes_from_info() -> None:
         },
         "required": ["id"],
     }
+
+
+def test_keyed_column() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        text = Column(String(64), key="string")
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1, text="txt")
+
+    # Assert
+    assert test.id == 1
+    assert test.text == "txt"
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "text": {"title": "Text", "maxLength": 64, "type": "string"},
+            "id": {"title": "Id", "type": "integer"},
+        },
+        "required": ["id"],
+    }
