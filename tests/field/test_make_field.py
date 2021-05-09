@@ -109,7 +109,7 @@ def test_length_from_info_must_match_column_definition() -> None:
         sqlalchemy_to_pydantic(Test)
     assert str(ex.value) == (
         "max_length (65) differs from length set for column type (64)."
-        " Either remove max_length from info (preferred) or set them to equal values."
+        " Either remove max_length from info (preferred) or set them to equal values"
     )
 
 

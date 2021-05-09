@@ -65,7 +65,7 @@ def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Co
         if info_max_length and info_max_length != sa_type_length:
             raise ValueError(
                 f"max_length ({info_max_length}) differs from length set for column type ({sa_type_length})."
-                " Either remove max_length from info (preferred) or set them to equal values."
+                " Either remove max_length from info (preferred) or set them to equal values"
             )
         field_kwargs["max_length"] = sa_type_length
 
