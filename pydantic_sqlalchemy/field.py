@@ -48,7 +48,7 @@ def infer_python_type(column: Column) -> Optional[type]:
     return python_type
 
 
-def _get_default(column: Column) -> Any:
+def _get_default_scalar(column: Column) -> Any:
     if column.default:
         # can't join these `if` or else an optional field will end without a default value
         if column.default.is_scalar:
@@ -88,5 +88,5 @@ def make_field(column: Column) -> Field:
         field_kwargs["default_factory"] = column.default.arg.__wrapped__
         return Field(**field_kwargs)
 
-    default = _get_default(column)
+    default = _get_default_scalar(column)
     return Field(default, **field_kwargs)
