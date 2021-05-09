@@ -54,12 +54,7 @@ def _get_default(column: Column) -> Any:
     return None
 
 
-def make_field(column: Column) -> Field:
-    field_kwargs = FieldKwargs()
-    for key in FieldKwargs.__annotations__.keys():
-        if key in column.info:
-            field_kwargs[key] = column.info[key]
-
+def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Column) -> None:
     sa_type_length = getattr(column.type, "length", None)
     if sa_type_length is not None:
         info_max_length = field_kwargs.get("max_length")
@@ -69,6 +64,15 @@ def make_field(column: Column) -> Field:
                 " Either remove max_length from info (preferred) or set them to equal values."
             )
         field_kwargs["max_length"] = sa_type_length
+
+
+def make_field(column: Column) -> Field:
+    field_kwargs = FieldKwargs()
+    for key in FieldKwargs.__annotations__.keys():
+        if key in column.info:
+            field_kwargs[key] = column.info[key]
+
+    _set_max_length_from_column_if_present(field_kwargs, column)
 
     if "default_factory" not in field_kwargs and column.default and column.default.is_callable:
         field_kwargs["default_factory"] = column.default.arg.__wrapped__
