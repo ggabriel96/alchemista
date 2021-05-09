@@ -6,18 +6,34 @@ from sqlalchemy import ARRAY, Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
 from pydantic_sqlalchemy import sqlalchemy_to_pydantic
-from pydantic_sqlalchemy.field import make_field
 
 
 def test_default_comes_from_column_definition() -> None:
     # Arrange
-    column = Column("col", String, default="default")
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        column = Column(String, default="default")
 
     # Act
-    field = make_field(column)
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1)
 
     # Assert
-    assert field.default == "default"
+    assert test.id == 1
+    assert test.column == "default"
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "column": {"title": "Column", "default": "default", "type": "string"},
+        },
+        "required": ["id"],
+    }
 
 
 def test_lambda_as_default_factory() -> None:
