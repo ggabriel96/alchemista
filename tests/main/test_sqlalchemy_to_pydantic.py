@@ -146,12 +146,8 @@ def test_allow_mutation() -> None:
         "type": "object",
         "properties": {
             "id": {"title": "Id", "type": "integer"},
-            "number": {"title": "Number", "allow_mutation": False, "type": "integer"},
-            "number_mut": {
-                "title": "Number Mut",
-                "allow_mutation": True,
-                "type": "integer",
-            },
+            "number": {"title": "Number", "type": "integer"},
+            "number_mut": {"title": "Number Mut", "type": "integer"},
         },
         "required": ["id"],
     }
