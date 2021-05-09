@@ -67,17 +67,19 @@ def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Co
             info_max_length = field_kwargs.get("max_length")
             if info_max_length and info_max_length != sa_type_length:
                 raise ValueError(
-                    f"max_length ({info_max_length}) differs from length set for column type ({sa_type_length})."
-                    " Either remove max_length from info (preferred) or set them to equal values"
+                    f"max_length ({info_max_length}) of `info` differs from length set in column type"
+                    f" ({sa_type_length}) on column `{column.name}`. Either remove max_length from `info` (preferred)"
+                    " or set them to equal values"
                 )
             field_kwargs["max_length"] = sa_type_length
 
 
 def make_field(column: Column) -> Field:
     field_kwargs = FieldKwargs()
-    for key in FieldKwargs.__annotations__.keys():
-        if key in column.info:
-            field_kwargs[key] = column.info[key]
+    if column.info:
+        for key in FieldKwargs.__annotations__.keys():
+            if key in column.info:
+                field_kwargs[key] = column.info[key]
 
     _set_max_length_from_column_if_present(field_kwargs, column)
 
