@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Any, Callable, Optional
+from typing import Any, Callable, List, Optional, TypeVar
 
 from pydantic import Field
 from sqlalchemy import Column
@@ -27,14 +27,21 @@ class FieldKwargs(TypedDict, total=False):
 
 
 def infer_python_type(column: Column) -> Optional[type]:
+    python_type = None
     try:
-        if hasattr(column.type, "impl"):
-            if hasattr(column.type.impl, "python_type"):
-                return column.type.impl.python_type
+        if hasattr(column.type, "impl") and hasattr(column.type.impl, "python_type"):
+            python_type = column.type.impl.python_type
         elif hasattr(column.type, "python_type"):
-            return column.type.python_type
+            python_type = column.type.python_type
     except NotImplementedError as nie:
         raise RuntimeError(f"Could not infer `python_type` for {column}") from nie
+
+    if python_type is list and hasattr(column.type, "item_type"):
+        # can't use `column.type.item_type` directly
+        ItemType = TypeVar("ItemType", bound=column.type.item_type)
+        return List[ItemType]
+
+    return python_type
 
 
 def _get_default(column: Column) -> Any:

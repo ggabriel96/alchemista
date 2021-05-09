@@ -2,7 +2,7 @@ import time
 import datetime as dt
 
 import pytest
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import ARRAY, Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
 from pydantic_sqlalchemy import sqlalchemy_to_pydantic
@@ -123,3 +123,77 @@ def test_allow_mutation() -> None:
     with pytest.raises(TypeError):
         test.number = 1
     assert test.number == 0
+
+
+def test_all_pydantic_attributes_from_info() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        ge_le = Column(Integer, info=dict(ge=0, le=10))
+        gt_lt = Column(Integer, info=dict(gt=0, lt=10))
+        items = Column(ARRAY(item_type=str), info=dict(min_items=0, max_items=2))
+        multiple = Column(Integer, info=dict(multiple_of=2))
+        string = Column(
+            Text,
+            default="",
+            nullable=False,
+            info=dict(
+                alias="text",
+                const="",
+                description="Some string",
+                example="Example",
+                max_length=64,
+                min_length=0,
+                regex=r"\w+",
+                title="SomeString",
+            ),
+        )
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1, ge_le=0, gt_lt=1, items=[], multiple=2, text="txt")
+
+    # Assert
+    assert test.id == 1
+    assert test.ge_le == 0
+    assert test.gt_lt == 1
+    assert test.items == []
+    assert test.multiple == 2
+    assert test.string == "txt"
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "ge_le": {"title": "Ge Le", "minimum": 0, "maximum": 10, "type": "integer"},
+            "gt_lt": {
+                "title": "Gt Lt",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 10,
+                "type": "integer",
+            },
+            "items": {
+                "title": "Items",
+                "minItems": 0,
+                "maxItems": 2,
+                "type": "array",
+                "items": {},
+            },
+            "multiple": {"title": "Multiple", "multipleOf": 2, "type": "integer"},
+            "text": {
+                "title": "SomeString",
+                "description": "Some string",
+                "default": "",
+                "maxLength": 64,
+                "minLength": 0,
+                "pattern": "\\w+",
+                "example": "Example",
+                "type": "string",
+            },
+        },
+        "required": ["id"],
+    }
