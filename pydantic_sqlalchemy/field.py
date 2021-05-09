@@ -28,7 +28,7 @@ class FieldKwargs(TypedDict, total=False):
 
 def infer_python_type(column: Column) -> Optional[type]:
     try:
-        # the `python_type` seems to always be an @property-decorated method,
+        # the `python_type` seems to always be a @property-decorated method,
         # so only checking its existence is not enough
         python_type = column.type.python_type
     except (AttributeError, NotImplementedError):
