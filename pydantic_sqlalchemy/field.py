@@ -53,6 +53,16 @@ def make_field(column: Column) -> Field:
         if key in column.info:
             field_kwargs[key] = column.info[key]
 
+    sa_type_length = getattr(column.type, "length", None)
+    if sa_type_length is not None:
+        info_max_length = field_kwargs.get("max_length")
+        if info_max_length and info_max_length != sa_type_length:
+            raise ValueError(
+                f"max_length ({info_max_length}) differs from length set for column type {sa_type_length}."
+                "Either remove max_length from info (preferred) or set them equal values."
+            )
+        field_kwargs["max_length"] = sa_type_length
+
     if "default_factory" not in field_kwargs and column.default and column.default.is_callable:
         field_kwargs["default_factory"] = column.default.arg.__wrapped__
         return Field(**field_kwargs)
