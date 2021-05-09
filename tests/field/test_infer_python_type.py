@@ -1,7 +1,8 @@
 import datetime as dt
+import enum
 
 import pytest
-from sqlalchemy import Column, Interval, String
+from sqlalchemy import Column, Enum, Interval, String
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy_utc import UtcDateTime
 
@@ -39,6 +40,21 @@ def test_direct_python_type_is_chosen_if_impl_attr_is_missing() -> None:
 
     # Assert
     assert python_type is str
+
+
+def test_enum() -> None:
+    # Arrange
+    class Bool(str, enum.Enum):
+        FALSE = "F"
+        TRUE = "T"
+
+    boolean = Column("bool", Enum(Bool))
+
+    # Act
+    python_type = infer_python_type(boolean)
+
+    # Assert
+    assert python_type is Bool
 
 
 def test_raises_exception_when_type_cannot_be_inferred() -> None:
