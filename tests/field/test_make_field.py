@@ -231,7 +231,21 @@ def test_enum() -> None:
         __tablename__ = "test"
 
         id = Column(Integer, primary_key=True)
-        boolean = Column(Enum(Bool), default=Bool.TRUE)
+        boolean_default = Column(Enum(Bool), default=Bool.TRUE)
+        boolean_not_native = Column(Enum(Bool, native_enum=False), default=Bool.TRUE)
+        boolean_values = Column(
+            Enum(Bool, values_callable=lambda enum: [item.value for item in enum]),
+            default=Bool.TRUE,
+        )
+        boolean_values_not_native = Column(
+            Enum(
+                Bool,
+                native=False,
+                length=1,
+                values_callable=lambda enum: [item.value for item in enum],
+            ),
+            default=Bool.TRUE,
+        )
 
     # Act
     TestPydantic = sqlalchemy_to_pydantic(Test)
@@ -239,13 +253,28 @@ def test_enum() -> None:
 
     # Assert
     assert test.id == 1
-    assert test.boolean == Bool.TRUE
+    assert test.boolean_default == Bool.TRUE
+    assert test.boolean_not_native == Bool.TRUE
+    assert test.boolean_values == Bool.TRUE
+    assert test.boolean_values_not_native == Bool.TRUE
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
         "properties": {
             "id": {"title": "Id", "type": "integer"},
-            "boolean": {
+            "boolean_default": {
+                "default": Bool.TRUE,
+                "allOf": [{"$ref": "#/definitions/Bool"}],
+            },
+            "boolean_not_native": {
+                "default": Bool.TRUE,
+                "allOf": [{"$ref": "#/definitions/Bool"}],
+            },
+            "boolean_values": {
+                "default": Bool.TRUE,
+                "allOf": [{"$ref": "#/definitions/Bool"}],
+            },
+            "boolean_values_not_native": {
                 "default": Bool.TRUE,
                 "allOf": [{"$ref": "#/definitions/Bool"}],
             },
