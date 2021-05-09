@@ -25,7 +25,7 @@ def test_field_kwargs_used_as_info() -> None:
 
     # Assert
     assert test.id == 1
-    assert test.n == 1
+    assert test.age == 1
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
