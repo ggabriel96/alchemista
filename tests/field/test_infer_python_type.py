@@ -16,7 +16,7 @@ def test_python_type_from_impl_attr_is_preferred() -> None:
     python_type = infer_python_type(column)
 
     # Assert
-    assert python_type == dt.timedelta
+    assert python_type is dt.timedelta
 
 
 def test_utc_date_time() -> None:
@@ -27,7 +27,7 @@ def test_utc_date_time() -> None:
     python_type = infer_python_type(column)
 
     # Assert
-    assert python_type == dt.datetime
+    assert python_type is dt.datetime
 
 
 def test_direct_python_type_is_chosen_if_impl_attr_is_missing() -> None:
@@ -38,7 +38,7 @@ def test_direct_python_type_is_chosen_if_impl_attr_is_missing() -> None:
     python_type = infer_python_type(column)
 
     # Assert
-    assert python_type == str
+    assert python_type is str
 
 
 def test_raises_exception_when_type_cannot_be_inferred() -> None:
