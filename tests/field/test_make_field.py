@@ -36,6 +36,54 @@ def test_default_comes_from_column_definition() -> None:
     }
 
 
+def test_length_comes_from_column_definition() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        string = Column(String(64))
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1)
+
+    # Assert
+    assert test.id == 1
+    assert test.string is None
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "string": {"title": "String", "maxLength": 64, "type": "string"},
+        },
+        "required": ["id"],
+    }
+
+
+def test_length_from_info_must_match_column_definition() -> None:
+    # Arrange
+    max_length = 64
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        string = Column(String(max_length), info=dict(max_length=max_length + 1))
+
+    # Act / Assert
+    with pytest.raises(ValueError) as ex:
+        sqlalchemy_to_pydantic(Test)
+    assert str(ex.value) == (
+        "max_length (65) differs from length set for column type (64)."
+        " Either remove max_length from info (preferred) or set them to equal values."
+    )
+
+
 def test_lambda_as_default_factory() -> None:
     # Arrange
     Base = declarative_base()
