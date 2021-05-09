@@ -27,14 +27,18 @@ class FieldKwargs(TypedDict, total=False):
 
 
 def infer_python_type(column: Column) -> Optional[type]:
-    python_type = None
     try:
-        if hasattr(column.type, "impl") and hasattr(column.type.impl, "python_type"):
+        # the `python_type` seems to always be an @property-decorated method,
+        # so only checking its existence is not enough
+        python_type = column.type.python_type
+    except (AttributeError, NotImplementedError):
+        try:
             python_type = column.type.impl.python_type
-        elif hasattr(column.type, "python_type"):
-            python_type = column.type.python_type
-    except NotImplementedError as nie:
-        raise RuntimeError(f"Could not infer `python_type` for {column}") from nie
+        except (AttributeError, NotImplementedError):
+            raise RuntimeError(
+                f"Could not infer the Python type for {column}."
+                " Check if the column type has a `python_type` in it or in `impl`"
+            )
 
     if python_type is list and hasattr(column.type, "item_type"):
         # can't use `column.type.item_type` directly
