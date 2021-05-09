@@ -2,14 +2,14 @@ import datetime as dt
 import enum
 
 import pytest
-from sqlalchemy import Column, Enum, Interval, String
+from sqlalchemy import Column, Enum, Interval
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy_utc import UtcDateTime
 
 from pydantic_sqlalchemy.field import infer_python_type
 
 
-def test_python_type_from_impl_attr_is_preferred() -> None:
+def test_direct_python_type_is_preferred_to_impl() -> None:
     # Arrange
     column = Column("col", Interval)
 
@@ -20,7 +20,7 @@ def test_python_type_from_impl_attr_is_preferred() -> None:
     assert python_type is dt.timedelta
 
 
-def test_utc_date_time() -> None:
+def test_fallback_to_python_type_from_impl() -> None:
     # Arrange
     column = Column("col", UtcDateTime)
 
@@ -29,17 +29,6 @@ def test_utc_date_time() -> None:
 
     # Assert
     assert python_type is dt.datetime
-
-
-def test_direct_python_type_is_chosen_if_impl_attr_is_missing() -> None:
-    # Arrange
-    column = Column("col", String)
-
-    # Act
-    python_type = infer_python_type(column)
-
-    # Assert
-    assert python_type is str
 
 
 def test_enum() -> None:
