@@ -49,11 +49,9 @@ def infer_python_type(column: Column) -> Optional[type]:
 
 
 def _get_default_scalar(column: Column) -> Any:
-    if column.default:
-        # can't join these `if` or else an optional field will end without a default value
-        if column.default.is_scalar:
-            return column.default.arg
-    elif column.nullable is False:
+    if column.default and column.default.is_scalar:
+        return column.default.arg
+    if column.nullable is False:
         return ...
     return None
 
