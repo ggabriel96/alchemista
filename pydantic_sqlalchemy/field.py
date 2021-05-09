@@ -81,6 +81,9 @@ def make_field(column: Column) -> Field:
 
     _set_max_length_from_column_if_present(field_kwargs, column)
 
+    if "description" not in field_kwargs and column.doc:
+        field_kwargs["description"] = column.doc
+
     if "default_factory" not in field_kwargs and column.default and column.default.is_callable:
         field_kwargs["default_factory"] = column.default.arg.__wrapped__
         return Field(**field_kwargs)

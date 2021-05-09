@@ -66,6 +66,58 @@ def test_default_comes_from_column_definition() -> None:
     }
 
 
+def test_description_from_column_doc_if_not_in_info() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        doc_col = Column(String(64), doc="Description from doc attribute")
+        doc_info = Column(
+            String(64),
+            doc="Documentation",
+            info=dict(description="Description from info is preferred"),
+        )
+        doc_none = Column(
+            String(64),
+            doc="Keep doc and emit no description",
+            info=dict(description=None),
+        )
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1)
+
+    # Assert
+    assert test.id == 1
+    assert test.doc_col is None
+    assert test.doc_info is None
+    assert test.doc_none is None
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "doc_col": {
+                "title": "Doc Col",
+                "description": "Description from doc attribute",
+                "maxLength": 64,
+                "type": "string",
+            },
+            "doc_info": {
+                "title": "Doc Info",
+                "description": "Description from info is preferred",
+                "maxLength": 64,
+                "type": "string",
+            },
+            "doc_none": {"title": "Doc None", "maxLength": 64, "type": "string"},
+        },
+        "required": ["id"],
+    }
+
+
 def test_length_comes_from_column_definition() -> None:
     # Arrange
     Base = declarative_base()
