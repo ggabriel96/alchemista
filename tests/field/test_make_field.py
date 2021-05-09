@@ -6,6 +6,35 @@ from sqlalchemy import ARRAY, Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
 from pydantic_sqlalchemy import sqlalchemy_to_pydantic
+from pydantic_sqlalchemy.field import FieldKwargs
+
+
+def test_field_kwargs_used_as_info() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        age = Column(Integer, info=FieldKwargs(ge=0))
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1, age=1)
+
+    # Assert
+    assert test.id == 1
+    assert test.n == 1
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "age": {"title": "Age", "minimum": 0, "type": "integer"},
+        },
+        "required": ["id"],
+    }
 
 
 def test_default_comes_from_column_definition() -> None:
