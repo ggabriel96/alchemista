@@ -1,6 +1,7 @@
 import time
 import datetime as dt
 
+import pytest
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import declarative_base
 
@@ -78,3 +79,47 @@ def test_datetime_now_as_default_factory() -> None:
         },
         "required": ["id"],
     }
+
+
+def test_allow_mutation() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        number = Column(Integer, info=dict(allow_mutation=False))
+        number_mut = Column(Integer, info=dict(allow_mutation=True))
+
+    class ValidateAssignment:
+        validate_assignment = True
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test, config=ValidateAssignment)
+    test = TestPydantic(id=1, number=0, number_mut=1)
+
+    # Assert
+    assert test.id == 1
+    assert test.number == 0
+    assert test.number_mut == 1
+    test.number_mut = 2
+    assert test.number_mut == 2
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "number": {"title": "Number", "allow_mutation": False, "type": "integer"},
+            "number_mut": {
+                "title": "Number Mut",
+                "allow_mutation": True,
+                "type": "integer",
+            },
+        },
+        "required": ["id"],
+    }
+
+    with pytest.raises(TypeError):
+        test.number = 1
+    assert test.number == 0
