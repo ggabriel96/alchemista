@@ -3,6 +3,7 @@ import time
 import datetime as dt
 
 import pytest
+from pydantic import ValidationError
 from sqlalchemy import ARRAY, Column, DateTime, Enum, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
@@ -164,6 +165,52 @@ def test_length_from_info_must_match_column_definition() -> None:
         "max_length (65) differs from length set for column type (64)."
         " Either remove max_length from info (preferred) or set them to equal values"
     )
+
+
+def test_optional_behavior() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        defaulted_req_str = Column(String, default="default", nullable=False)
+        opt_str = Column(String, default=None, nullable=True)
+        req_str = Column(String, nullable=False)
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1, req_str="str")
+
+    # Assert
+    assert test.id == 1
+    assert test.defaulted_req_str == "default"
+    assert test.opt_str is None
+    assert test.req_str == "str"
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "defaulted_req_str": {
+                "title": "Defaulted Req Str",
+                "default": "default",
+                "type": "string",
+            },
+            "opt_str": {"title": "Opt Str", "type": "string"},
+            "req_str": {"title": "Req Str", "type": "string"},
+        },
+        "required": ["id", "req_str"],
+    }
+
+    with pytest.raises(ValidationError) as ex:
+        TestPydantic(id=2, req_str="str", defaulted_req_str=None)
+    errors = ex.value.errors()
+    assert len(errors) == 1
+    assert errors[0]["loc"] == ("defaulted_req_str",)
+    assert errors[0]["msg"] == "none is not an allowed value"
+    assert errors[0]["type"] == "type_error.none.not_allowed"
 
 
 def test_lambda_as_default_factory() -> None:
