@@ -2,7 +2,7 @@ from numbers import Number
 from typing import Any, Callable, List, Optional, TypeVar
 
 from pydantic import Field
-from sqlalchemy import Column
+from sqlalchemy import Column, Enum
 from typing_extensions import TypedDict
 
 
@@ -59,15 +59,18 @@ def _get_default(column: Column) -> Any:
 
 
 def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Column) -> None:
-    sa_type_length = getattr(column.type, "length", None)
-    if sa_type_length is not None:
-        info_max_length = field_kwargs.get("max_length")
-        if info_max_length and info_max_length != sa_type_length:
-            raise ValueError(
-                f"max_length ({info_max_length}) differs from length set for column type ({sa_type_length})."
-                " Either remove max_length from info (preferred) or set them to equal values"
-            )
-        field_kwargs["max_length"] = sa_type_length
+    # some types have a length in the backend, but setting that interferes with the model generation
+    # maybe we should list the types that we *should set* the length, instead of *not set* the length?
+    if not isinstance(column.type, Enum):
+        sa_type_length = getattr(column.type, "length", None)
+        if sa_type_length is not None:
+            info_max_length = field_kwargs.get("max_length")
+            if info_max_length and info_max_length != sa_type_length:
+                raise ValueError(
+                    f"max_length ({info_max_length}) differs from length set for column type ({sa_type_length})."
+                    " Either remove max_length from info (preferred) or set them to equal values"
+                )
+            field_kwargs["max_length"] = sa_type_length
 
 
 def make_field(column: Column) -> Field:

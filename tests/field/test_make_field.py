@@ -1,8 +1,9 @@
+import enum
 import time
 import datetime as dt
 
 import pytest
-from sqlalchemy import ARRAY, Column, DateTime, Integer, String, Text
+from sqlalchemy import ARRAY, Column, DateTime, Enum, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
 from pydantic_sqlalchemy import sqlalchemy_to_pydantic
@@ -216,6 +217,49 @@ def test_allow_mutation() -> None:
     with pytest.raises(TypeError):
         test.number = 1
     assert test.number == 0
+
+
+def test_enum() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Bool(str, enum.Enum):
+        FALSE = "F"
+        TRUE = "T"
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        boolean = Column(Enum(Bool), default=Bool.TRUE)
+
+    # Act
+    TestPydantic = sqlalchemy_to_pydantic(Test)
+    test = TestPydantic(id=1)
+
+    # Assert
+    assert test.id == 1
+    assert test.boolean == Bool.TRUE
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "boolean": {
+                "default": Bool.TRUE,
+                "allOf": [{"$ref": "#/definitions/Bool"}],
+            },
+        },
+        "required": ["id"],
+        "definitions": {
+            "Bool": {
+                "title": "Bool",
+                "description": "An enumeration.",
+                "enum": ["F", "T"],
+                "type": "string",
+            }
+        },
+    }
 
 
 def test_all_pydantic_attributes_from_info() -> None:
