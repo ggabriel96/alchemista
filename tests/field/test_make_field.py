@@ -36,6 +36,15 @@ def test_lambda_as_default_factory() -> None:
     # Assert
     assert test.id == 1
     assert test.dynamic_column == "dynamic default"
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "dynamic_column": {"title": "Dynamic Column", "type": "string"},
+        },
+        "required": ["id"],
+    }
 
 
 def test_datetime_now_as_default_factory() -> None:
@@ -60,3 +69,12 @@ def test_datetime_now_as_default_factory() -> None:
     assert test2.id == 2
     assert isinstance(test2.datetime, dt.datetime)
     assert test1.datetime < test2.datetime
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "datetime": {"title": "Datetime", "type": "string", "format": "date-time"},
+        },
+        "required": ["id"],
+    }
