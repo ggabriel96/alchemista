@@ -300,18 +300,6 @@ pymysql = ["pymysql (<1)", "pymysql"]
 sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
-name = "sqlalchemy-stubs"
-version = "0.3"
-description = "SQLAlchemy stubs and mypy plugin"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-mypy = ">=0.720"
-typing-extensions = ">=3.7.4"
-
-[[package]]
 name = "sqlalchemy-utc"
 version = "0.10.0"
 description = "SQLAlchemy type to store aware datetime values"
@@ -321,6 +309,18 @@ python-versions = "*"
 
 [package.dependencies]
 SQLAlchemy = ">=0.9.0"
+
+[[package]]
+name = "sqlalchemy2-stubs"
+version = "0.0.1a10"
+description = "Typing Stubs for SQLAlchemy 1.4"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+mypy = ">=0.800"
+typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "toml"
@@ -369,7 +369,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "562013098e6e45721f936f8fdf8671412813e24f7f290518bb8d473cc060802f"
+content-hash = "4af44db86e88139a0c3d8f43c475b5953434e47c409771a2520a19b81d5c2296"
 
 [metadata.files]
 appdirs = [
@@ -672,13 +672,13 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.14-cp39-cp39-win_amd64.whl", hash = "sha256:296a3b53e50c3d61ea22969b9d57937714e62f4bd7b5db7bb0afe80e8fbbe44c"},
     {file = "SQLAlchemy-1.4.14.tar.gz", hash = "sha256:fcea0af70a356fdff9efa917d33ec5a8538fe7bde3004ceded7377f1a97d8ef3"},
 ]
-sqlalchemy-stubs = [
-    {file = "sqlalchemy-stubs-0.3.tar.gz", hash = "sha256:a3318c810697164e8c818aa2d90bac570c1a0e752ced3ec25455b309c0bee8fd"},
-    {file = "sqlalchemy_stubs-0.3-py3-none-any.whl", hash = "sha256:ca1250605a39648cc433f5c70cb1a6f9fe0b60bdda4c51e1f9a2ab3651daadc8"},
-]
 sqlalchemy-utc = [
     {file = "SQLAlchemy-Utc-0.10.0.tar.gz", hash = "sha256:fed53af37d250168b99eba8f9908a50e34e10dab3c32d38df3e65601ac951baf"},
     {file = "SQLAlchemy_Utc-0.10.0-py2.py3-none-any.whl", hash = "sha256:ec5395dfa4d237239c162a1b83283d88c8e2a94219512708634c55329c900278"},
+]
+sqlalchemy2-stubs = [
+    {file = "sqlalchemy2-stubs-0.0.1a10.tar.gz", hash = "sha256:6bc4d5e6a18c1080388a237f224c304957aed5397c5931ef97d037c1eea432fc"},
+    {file = "sqlalchemy2_stubs-0.0.1a10-py3-none-any.whl", hash = "sha256:3bfdac04026533fe42363f97cbe5ef03dc38d7b8faf8d9373f6396d9b5080aa7"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

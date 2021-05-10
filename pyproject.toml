@@ -18,8 +18,8 @@ isort = "^4.3.21"
 mypy = "^0.812"
 pytest = "^5.4.1"
 pytest-cov = "^2.8.1"
-sqlalchemy-stubs = "^0.3"
 sqlalchemy-utc = "^0.10.0"
+sqlalchemy2-stubs = "^0.0.1-alpha.10"
 
 [build-system]
 requires = ["poetry>=0.12"]
