@@ -1087,7 +1087,7 @@ dev = ["autoflake", "flake8", "jupyter"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "a9d6c637d4ee621c3e4020f1551a3fa20562e6023db297a5b147eeb41d621e4b"
+content-hash = "d598e5a6cff43fce4382bee38f5819f913f9410745032ee1779f4cdc9a34d44f"
 
 [metadata.files]
 appdirs = [
