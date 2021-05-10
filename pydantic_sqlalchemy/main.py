@@ -10,7 +10,7 @@ class OrmConfig(BaseConfig):
 
 
 def sqlalchemy_to_pydantic(
-    db_model: Type, *, config: Type = OrmConfig, exclude: Container[str] = []
+    db_model: type, *, config: type = OrmConfig, exclude: Container[str] = []
 ) -> Type[BaseModel]:
     mapper = inspect(db_model)
     fields = {}
