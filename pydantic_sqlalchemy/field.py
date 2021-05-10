@@ -2,6 +2,7 @@ from numbers import Number
 from typing import Any, Callable, List, Optional, TypeVar
 
 from pydantic import Field
+from pydantic.fields import FieldInfo
 from sqlalchemy import Column, Enum
 from typing_extensions import TypedDict
 
@@ -72,7 +73,7 @@ def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Co
             field_kwargs["max_length"] = sa_type_length
 
 
-def make_field(column: Column) -> Field:
+def make_field(column: Column) -> FieldInfo:
     field_kwargs = FieldKwargs()
     if column.info:
         for key in FieldKwargs.__annotations__.keys():
