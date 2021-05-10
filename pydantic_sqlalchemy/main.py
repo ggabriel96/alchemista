@@ -12,7 +12,7 @@ class OrmConfig(BaseConfig):
 
 
 def sqlalchemy_to_pydantic(
-    db_model: Type, *, config: Type = OrmConfig, exclude: Optional[Container[str]] = None
+    db_model: type, *, config: type = OrmConfig, exclude: Optional[Container[str]] = None
 ) -> Type[BaseModel]:
     if exclude is None:
         exclude = []
@@ -27,7 +27,5 @@ def sqlalchemy_to_pydantic(
             python_type = infer_python_type(column)
             field = make_field(column)
             fields[name] = (python_type, field)
-    pydantic_model = create_model(
-        db_model.__name__, __config__=config, **fields  # type: ignore
-    )
+    pydantic_model = create_model(db_model.__name__, __config__=config, **fields)  # type: ignore
     return pydantic_model
