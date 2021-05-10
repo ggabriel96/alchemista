@@ -26,9 +26,7 @@ class User(Base):
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(UtcDateTime, default=utc_now, onupdate=utc_now)
 
-    addresses = relationship(
-        "Address", back_populates="user", cascade="all, delete, delete-orphan"
-    )
+    addresses = relationship("Address", back_populates="user", cascade="all, delete, delete-orphan")
 
 
 class Address(Base):
