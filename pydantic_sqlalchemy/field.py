@@ -3,6 +3,7 @@ from typing import Any, Callable, List, cast
 from pydantic import Field
 from pydantic.fields import FieldInfo
 from sqlalchemy import Column, Enum
+from sqlalchemy.types import TypeEngine
 from typing_extensions import TypedDict
 
 
@@ -26,24 +27,29 @@ class FieldKwargs(TypedDict, total=False):
     title: str
 
 
-def infer_python_type(column: Column) -> type:  # type: ignore[type-arg]
+def _extract_python_type(type_engine: TypeEngine) -> type:  # type: ignore[type-arg]
     try:
         # the `python_type` seems to always be a @property-decorated method,
         # so only checking its existence is not enough
-        python_type = column.type.python_type
+        return type_engine.python_type
     except (AttributeError, NotImplementedError):
-        try:
-            python_type = column.type.impl.python_type
-        except (AttributeError, NotImplementedError):
-            raise RuntimeError(
-                f"Could not infer the Python type for {column}."
-                " Check if the column type has a `python_type` in it or in `impl`"
-            )
+        return cast(type, type_engine.impl.python_type)  # type: ignore[attr-defined]
+
+
+def infer_python_type(column: Column) -> type:  # type: ignore[type-arg]
+    try:
+        python_type = _extract_python_type(column.type)
+    except (AttributeError, NotImplementedError):
+        raise RuntimeError(
+            f"Could not infer the Python type for {column}."
+            " Check if the column type has a `python_type` in it or in `impl`"
+        )
 
     if python_type is list and hasattr(column.type, "item_type"):
-        return List[Any]
+        item_type = _extract_python_type(column.type.item_type)
+        return List[item_type]  # type: ignore[valid-type]
 
-    return cast(type, python_type)
+    return python_type
 
 
 def _get_default_scalar(column: Column) -> Any:  # type: ignore[type-arg]

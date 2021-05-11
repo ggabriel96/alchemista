@@ -1,8 +1,9 @@
 import datetime as dt
 import enum
+from typing import List
 
 import pytest
-from sqlalchemy import Column, Enum, Interval
+from sqlalchemy import ARRAY, Column, Enum, Integer, Interval
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy_utc import UtcDateTime
 
@@ -44,6 +45,17 @@ def test_enum() -> None:
 
     # Assert
     assert python_type is Bool
+
+
+def test_array() -> None:
+    # Arrange
+    array = Column("array", ARRAY(item_type=Integer))
+
+    # Act
+    python_type = infer_python_type(array)
+
+    # Assert
+    assert python_type is List[int]
 
 
 def test_raises_exception_when_type_cannot_be_inferred() -> None:
