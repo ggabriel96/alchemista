@@ -1,5 +1,4 @@
-from numbers import Number
-from typing import Any, Callable, List, Optional, TypeVar
+from typing import Any, Callable, List, cast
 
 from pydantic import Field
 from pydantic.fields import FieldInfo
@@ -8,26 +7,26 @@ from typing_extensions import TypedDict
 
 
 class FieldKwargs(TypedDict, total=False):
-    alias: Optional[str]
-    allow_mutation: Optional[bool]
-    const: Optional[Any]
-    default_factory: Optional[Callable[[], Any]]
-    description: Optional[str]
-    example: Optional[str]
-    ge: Optional[Number]
-    gt: Optional[Number]
-    le: Optional[Number]
-    lt: Optional[Number]
-    max_items: Optional[int]
-    max_length: Optional[int]
-    min_items: Optional[int]
-    min_length: Optional[int]
-    multiple_of: Optional[Number]
-    regex: Optional[str]
-    title: Optional[str]
+    alias: str
+    allow_mutation: bool
+    const: Any
+    default_factory: Callable[[], Any]
+    description: str
+    example: str
+    ge: float
+    gt: float
+    le: float
+    lt: float
+    max_items: int
+    max_length: int
+    min_items: int
+    min_length: int
+    multiple_of: float
+    regex: str
+    title: str
 
 
-def infer_python_type(column: Column) -> Optional[type]:
+def infer_python_type(column: Column) -> type:  # type: ignore[type-arg]
     try:
         # the `python_type` seems to always be a @property-decorated method,
         # so only checking its existence is not enough
@@ -42,14 +41,12 @@ def infer_python_type(column: Column) -> Optional[type]:
             )
 
     if python_type is list and hasattr(column.type, "item_type"):
-        # can't use `column.type.item_type` directly
-        ItemType = TypeVar("ItemType", bound=column.type.item_type)
-        return List[ItemType]
+        return List[Any]
 
-    return python_type
+    return cast(type, python_type)
 
 
-def _get_default_scalar(column: Column) -> Any:
+def _get_default_scalar(column: Column) -> Any:  # type: ignore[type-arg]
     if column.default and column.default.is_scalar:
         return column.default.arg
     if column.nullable is False:
@@ -57,7 +54,7 @@ def _get_default_scalar(column: Column) -> Any:
     return None
 
 
-def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Column) -> None:
+def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Column) -> None:  # type: ignore[type-arg]
     # some types have a length in the backend, but setting that interferes with the model generation
     # maybe we should list the types that we *should set* the length, instead of *not set* the length?
     if not isinstance(column.type, Enum):
@@ -73,12 +70,12 @@ def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Co
             field_kwargs["max_length"] = sa_type_length
 
 
-def make_field(column: Column) -> FieldInfo:
+def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
     field_kwargs = FieldKwargs()
     if column.info:
         for key in FieldKwargs.__annotations__.keys():
             if key in column.info:
-                field_kwargs[key] = column.info[key]
+                field_kwargs[key] = column.info[key]  # type: ignore[misc]
 
     _set_max_length_from_column_if_present(field_kwargs, column)
 
@@ -87,7 +84,7 @@ def make_field(column: Column) -> FieldInfo:
 
     if "default_factory" not in field_kwargs and column.default and column.default.is_callable:
         field_kwargs["default_factory"] = column.default.arg.__wrapped__
-        return Field(**field_kwargs)
+        return cast(FieldInfo, Field(**field_kwargs))
 
     default = _get_default_scalar(column)
-    return Field(default, **field_kwargs)
+    return cast(FieldInfo, Field(default, **field_kwargs))
