@@ -54,5 +54,5 @@ def test_raises_exception_when_type_cannot_be_inferred() -> None:
     with pytest.raises(RuntimeError) as ex:
         infer_python_type(column)
     assert str(ex.value) == (
-        "Could not infer the Python type for col." " Check if the column type has a `python_type` in it or in `impl`"
+        "Could not infer the Python type for col. Check if the column type has a `python_type` in it or in `impl`"
     )
