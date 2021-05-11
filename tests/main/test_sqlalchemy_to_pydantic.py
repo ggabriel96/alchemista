@@ -157,7 +157,7 @@ def test_allow_mutation() -> None:
     assert test.number == 0
 
 
-def test_enum() -> None:
+def test_enum_schema() -> None:
     # Arrange
     Base = declarative_base()
 
@@ -303,7 +303,7 @@ def test_all_pydantic_attributes_from_info() -> None:
     }
 
 
-def test_keyed_column() -> None:
+def test_keyed_column_schema() -> None:
     # Arrange
     Base = declarative_base()
 
