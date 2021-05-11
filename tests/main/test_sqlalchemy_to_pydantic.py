@@ -239,7 +239,7 @@ def test_all_pydantic_attributes_from_info() -> None:
         id = Column(Integer, primary_key=True)
         ge_le = Column(Integer, info=dict(ge=0, le=10))
         gt_lt = Column(Integer, info=dict(gt=0, lt=10))
-        items = Column(ARRAY(item_type=str), info=dict(min_items=0, max_items=2))
+        items = Column(ARRAY(item_type=Text), info=dict(min_items=0, max_items=2))
         multiple = Column(Integer, info=dict(multiple_of=2))
         string = Column(
             Text,
@@ -274,19 +274,8 @@ def test_all_pydantic_attributes_from_info() -> None:
         "properties": {
             "id": {"title": "Id", "type": "integer"},
             "ge_le": {"title": "Ge Le", "minimum": 0, "maximum": 10, "type": "integer"},
-            "gt_lt": {
-                "title": "Gt Lt",
-                "exclusiveMinimum": 0,
-                "exclusiveMaximum": 10,
-                "type": "integer",
-            },
-            "items": {
-                "title": "Items",
-                "minItems": 0,
-                "maxItems": 2,
-                "type": "array",
-                "items": {},
-            },
+            "gt_lt": {"title": "Gt Lt", "exclusiveMinimum": 0, "exclusiveMaximum": 10, "type": "integer"},
+            "items": {"title": "Items", "minItems": 0, "maxItems": 2, "type": "array", "items": {"type": "string"}},
             "multiple": {"title": "Multiple", "multipleOf": 2, "type": "integer"},
             "text": {
                 "title": "SomeString",
