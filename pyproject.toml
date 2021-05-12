@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "pydantic-sqlalchemy"
+name = "alchemista"
 version = "0.1.0"
 description = "Tools to convert SQLAlchemy models to Pydantic models"
-authors = ["Sebastián Ramírez <tiangolo@gmail.com>"]
 license = "MIT"
+authors = ["Gabriel Galli <ggabriel96@hotmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
