@@ -1,19 +1,18 @@
-name: main
+name: publish
 
-on: [push]
+on:
+  push:
+    branches: [main]
 
 jobs:
-  test:
+  pypi:
+    environment: PyPI
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
-      fail-fast: false
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.6'
 
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.4
@@ -31,14 +30,9 @@ jobs:
         if: steps.dependency-cache.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
 
-      - name: Run tests
+      - name: Publish to PyPI
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.API_TOKEN }}
         run: |
-          source .venv/bin/activate
-          pytest --cov=alchemista/ --cov-report=xml tests/
-
-      # move to https://github.com/codecov/codecov-action in the future
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage.xml
-          path: coverage.xml
+          poetry config pypi-token.pypi "${POETRY_PYPI_TOKEN_PYPI}"
+          poetry publish --build --no-interaction
