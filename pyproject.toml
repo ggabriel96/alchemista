@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "alchemista"
-version = "0.1.0"
+version = "0.1.0a"
 description = "Tools to convert SQLAlchemy models to Pydantic models"
 license = "MIT"
 authors = ["Gabriel Galli <ggabriel96@hotmail.com>"]
