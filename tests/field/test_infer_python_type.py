@@ -152,7 +152,7 @@ def test_array(sa_type: types.TypeEngine, expected_type: type) -> None:  # type:
     inferred_type = infer_python_type(array)
 
     # Assert
-    assert inferred_type is List[expected_type]
+    assert inferred_type is List[expected_type]  # type: ignore[valid-type]
 
 
 def test_enum_array() -> None:
