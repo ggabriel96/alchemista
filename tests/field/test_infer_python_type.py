@@ -16,10 +16,10 @@ def test_fallback_to_python_type_from_impl() -> None:
     column = Column("col", UtcDateTime)
 
     # Act
-    python_type = infer_python_type(column)
+    inferred_type = infer_python_type(column)
 
     # Assert
-    assert python_type is dt.datetime
+    assert inferred_type is dt.datetime
 
 
 def test_enum() -> None:
@@ -31,10 +31,10 @@ def test_enum() -> None:
     boolean = Column("bool", types.Enum(Bool))
 
     # Act
-    python_type = infer_python_type(boolean)
+    inferred_type = infer_python_type(boolean)
 
     # Assert
-    assert python_type is Bool
+    assert inferred_type is Bool
 
 
 @pytest.mark.parametrize(
@@ -101,10 +101,10 @@ def test_array() -> None:
     array = Column("array", types.ARRAY(item_type=types.Integer))
 
     # Act
-    python_type = infer_python_type(array)
+    inferred_type = infer_python_type(array)
 
     # Assert
-    assert python_type is List[int]
+    assert inferred_type is List[int]
 
 
 def test_raises_exception_when_type_cannot_be_inferred() -> None:
