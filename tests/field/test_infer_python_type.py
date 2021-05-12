@@ -8,7 +8,7 @@ from sqlalchemy import Column, types
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy_utc import UtcDateTime
 
-from pydantic_sqlalchemy.field import infer_python_type
+from alchemista.field import infer_python_type
 
 
 def test_fallback_to_python_type_from_impl() -> None:

@@ -4,7 +4,7 @@ from pydantic import BaseConfig, BaseModel, create_model
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.properties import ColumnProperty
 
-from pydantic_sqlalchemy.field import infer_python_type, make_field
+from alchemista.field import infer_python_type, make_field
 
 
 class OrmConfig(BaseConfig):
