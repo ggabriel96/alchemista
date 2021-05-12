@@ -27,10 +27,10 @@ def test_optional_behavior() -> None:
     test = TestPydantic(id=1, req_str="str")
 
     # Assert
-    assert test.id == 1
-    assert test.defaulted_req_str == "default"
-    assert test.opt_str is None
-    assert test.req_str == "str"
+    assert getattr(test, "id") == 1
+    assert getattr(test, "defaulted_req_str") == "default"
+    assert getattr(test, "opt_str") is None
+    assert getattr(test, "req_str") == "str"
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
@@ -71,8 +71,8 @@ def test_lambda_as_default_factory() -> None:
     test = TestPydantic(id=1)
 
     # Assert
-    assert test.id == 1
-    assert test.dynamic_column == "dynamic default"
+    assert getattr(test, "id") == 1
+    assert getattr(test, "dynamic_column") == "dynamic default"
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
@@ -101,11 +101,11 @@ def test_datetime_now_as_default_factory() -> None:
     test2 = TestPydantic(id=2)
 
     # Assert
-    assert test1.id == 1
-    assert isinstance(test1.datetime, dt.datetime)
-    assert test2.id == 2
-    assert isinstance(test2.datetime, dt.datetime)
-    assert test1.datetime < test2.datetime
+    assert getattr(test1, "id") == 1
+    assert isinstance(getattr(test1, "datetime"), dt.datetime)
+    assert getattr(test2, "id") == 2
+    assert isinstance(getattr(test2, "datetime"), dt.datetime)
+    assert getattr(test1, "datetime") < getattr(test2, "datetime")
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
@@ -136,11 +136,11 @@ def test_allow_mutation() -> None:
     test = TestPydantic(id=1, number=0, number_mut=1)
 
     # Assert
-    assert test.id == 1
-    assert test.number == 0
-    assert test.number_mut == 1
-    test.number_mut = 2
-    assert test.number_mut == 2
+    assert getattr(test, "id") == 1
+    assert getattr(test, "number") == 0
+    assert getattr(test, "number_mut") == 1
+    setattr(test, "number_mut", 2)
+    assert getattr(test, "number_mut") == 2
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
@@ -153,8 +153,8 @@ def test_allow_mutation() -> None:
     }
 
     with pytest.raises(TypeError):
-        test.number = 1
-    assert test.number == 0
+        setattr(test, "number", 1)
+    assert getattr(test, "number") == 0
 
 
 def test_enum_schema() -> None:
@@ -190,11 +190,11 @@ def test_enum_schema() -> None:
     test = TestPydantic(id=1)
 
     # Assert
-    assert test.id == 1
-    assert test.boolean_default == Bool.TRUE
-    assert test.boolean_not_native == Bool.TRUE
-    assert test.boolean_values == Bool.TRUE
-    assert test.boolean_values_not_native == Bool.TRUE
+    assert getattr(test, "id") == 1
+    assert getattr(test, "boolean_default") == Bool.TRUE
+    assert getattr(test, "boolean_not_native") == Bool.TRUE
+    assert getattr(test, "boolean_values") == Bool.TRUE
+    assert getattr(test, "boolean_values_not_native") == Bool.TRUE
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
@@ -262,12 +262,12 @@ def test_all_pydantic_attributes_from_info() -> None:
     test = TestPydantic(id=1, ge_le=0, gt_lt=1, items=[], multiple=2, text="txt")
 
     # Assert
-    assert test.id == 1
-    assert test.ge_le == 0
-    assert test.gt_lt == 1
-    assert test.items == []
-    assert test.multiple == 2
-    assert test.string == "txt"
+    assert getattr(test, "id") == 1
+    assert getattr(test, "ge_le") == 0
+    assert getattr(test, "gt_lt") == 1
+    assert getattr(test, "items") == []
+    assert getattr(test, "multiple") == 2
+    assert getattr(test, "string") == "txt"
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
@@ -307,8 +307,8 @@ def test_keyed_column_schema() -> None:
     test = TestPydantic(id=1, text="txt")
 
     # Assert
-    assert test.id == 1
-    assert test.text == "txt"
+    assert getattr(test, "id") == 1
+    assert getattr(test, "text") == "txt"
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
@@ -335,7 +335,7 @@ def test_exclude_removes_fields_from_generated_model() -> None:
 
     # Assert
     test = TestPydantic(id=1)
-    assert test.id == 1
+    assert getattr(test, "id") == 1
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
