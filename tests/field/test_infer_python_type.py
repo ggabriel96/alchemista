@@ -96,15 +96,63 @@ def test_common_types(sa_type: types.TypeEngine, expected_type: type) -> None:  
     assert inferred_type is expected_type
 
 
-def test_array() -> None:
+@pytest.mark.parametrize(
+    "sa_type,expected_type",
+    [
+        (types.BigInteger, int),
+        (types.Boolean, bool),
+        (types.Date, dt.date),
+        (types.DateTime, dt.datetime),
+        # (types.Enum, enum.Enum),
+        (types.Float, float),
+        (types.Integer, int),
+        (types.Interval, dt.timedelta),
+        (types.LargeBinary, bytes),
+        # (types.MatchType, bool),
+        (types.Numeric, Decimal),
+        (types.PickleType, bytes),
+        # (types.SchemaType, None),
+        (types.SmallInteger, int),
+        (types.String, str),
+        (types.Text, str),
+        (types.Time, dt.time),
+        (types.Unicode, str),
+        (types.UnicodeText, str),
+        # (types.ARRAY, list),
+        (types.BIGINT, int),
+        (types.BINARY, bytes),
+        (types.BLOB, bytes),
+        (types.BOOLEAN, bool),
+        (types.CHAR, str),
+        (types.CLOB, str),
+        (types.DATE, dt.date),
+        (types.DATETIME, dt.datetime),
+        (types.DECIMAL, Decimal),
+        (types.FLOAT, float),
+        (types.INT, int),
+        (types.INTEGER, int),
+        (types.JSON, dict),
+        (types.NCHAR, str),
+        (types.NUMERIC, Decimal),
+        (types.NVARCHAR, str),
+        (types.REAL, float),
+        (types.SMALLINT, int),
+        (types.TEXT, str),
+        (types.TIME, dt.time),
+        (types.TIMESTAMP, dt.datetime),
+        (types.VARBINARY, bytes),
+        (types.VARCHAR, str),
+    ]
+)
+def test_array(sa_type: types.TypeEngine, expected_type: type) -> None:  # type: ignore[type-arg]
     # Arrange
-    array = Column("array", types.ARRAY(item_type=types.Integer))
+    array = Column("array", types.ARRAY(item_type=sa_type))
 
     # Act
     inferred_type = infer_python_type(array)
 
     # Assert
-    assert inferred_type is List[int]
+    assert inferred_type is List[expected_type]
 
 
 def test_raises_exception_when_type_cannot_be_inferred() -> None:
