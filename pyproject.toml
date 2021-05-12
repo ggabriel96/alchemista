@@ -2,8 +2,8 @@
 name = "pydantic-sqlalchemy"
 version = "0.1.0"
 description = "Tools to convert SQLAlchemy models to Pydantic models"
-authors = ["Gabriel Galli <ggabriel96@hotmail.com>"]
 license = "MIT"
+authors = ["Gabriel Galli <ggabriel96@hotmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
