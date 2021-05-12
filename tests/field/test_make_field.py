@@ -6,7 +6,7 @@ import pytest
 from pydantic.fields import Undefined
 from sqlalchemy import Column, Integer, String, Text
 
-from pydantic_sqlalchemy.field import FieldKwargs, make_field
+from alchemista.field import FieldKwargs, make_field
 
 
 def test_field_kwargs_used_as_info() -> None:

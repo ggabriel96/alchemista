@@ -3,7 +3,7 @@ try:  # pragma: nocover
 except ImportError:
     from importlib_metadata import version
 
-from pydantic_sqlalchemy.main import sqlalchemy_to_pydantic
+from alchemista.main import sqlalchemy_to_pydantic
 
 __version__ = version(__package__)
 __all__ = ["sqlalchemy_to_pydantic"]

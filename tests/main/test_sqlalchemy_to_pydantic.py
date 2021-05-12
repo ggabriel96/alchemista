@@ -7,7 +7,7 @@ from pydantic import ValidationError
 from sqlalchemy import ARRAY, Column, DateTime, Enum, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
-from pydantic_sqlalchemy import sqlalchemy_to_pydantic
+from alchemista import sqlalchemy_to_pydantic
 
 
 def test_optional_behavior() -> None:
