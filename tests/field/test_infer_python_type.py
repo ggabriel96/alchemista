@@ -13,7 +13,7 @@ from pydantic_sqlalchemy.field import infer_python_type
 
 def test_fallback_to_python_type_from_impl() -> None:
     # Arrange
-    column = Column("col", UtcDateTime)
+    column = Column("column", UtcDateTime)
 
     # Act
     inferred_type = infer_python_type(column)
@@ -109,7 +109,7 @@ def test_array() -> None:
 
 def test_raises_exception_when_type_cannot_be_inferred() -> None:
     # Arrange
-    column = Column("col", HSTORE)
+    column = Column("column", HSTORE)
 
     # Act / Assert
     with pytest.raises(RuntimeError) as ex:
