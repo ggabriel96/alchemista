@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pydantic-sqlalchemy"
+name = "alchemista"
 version = "0.1.0"
 description = "Tools to convert SQLAlchemy models to Pydantic models"
 license = "MIT"
