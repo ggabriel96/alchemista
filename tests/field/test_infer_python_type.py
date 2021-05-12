@@ -155,6 +155,21 @@ def test_array(sa_type: types.TypeEngine, expected_type: type) -> None:  # type:
     assert inferred_type is List[expected_type]
 
 
+def test_enum_array() -> None:
+    # Arrange
+    class Bool(str, enum.Enum):
+        FALSE = "F"
+        TRUE = "T"
+
+    array = Column("array", types.ARRAY(item_type=types.Enum(Bool)))
+
+    # Act
+    inferred_type = infer_python_type(array)
+
+    # Assert
+    assert inferred_type is List[Bool]
+
+
 def test_raises_exception_when_type_cannot_be_inferred() -> None:
     # Arrange
     column = Column("column", HSTORE)
