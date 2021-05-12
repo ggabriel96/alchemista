@@ -34,7 +34,7 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          pytest --cov=pydantic_sqlalchemy/ --cov-report=xml tests/
+          pytest --cov=alchemista/ --cov-report=xml tests/
 
       # move to https://github.com/codecov/codecov-action in the future
       - name: Upload coverage report
