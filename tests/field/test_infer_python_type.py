@@ -83,7 +83,7 @@ def test_enum() -> None:
         (types.TIMESTAMP, dt.datetime),
         (types.VARBINARY, bytes),
         (types.VARCHAR, str),
-    ]
+    ],
 )
 def test_common_types(sa_type: types.TypeEngine, expected_type: type) -> None:  # type: ignore[type-arg]
     # Arrange
@@ -142,7 +142,7 @@ def test_common_types(sa_type: types.TypeEngine, expected_type: type) -> None:  
         (types.TIMESTAMP, dt.datetime),
         (types.VARBINARY, bytes),
         (types.VARCHAR, str),
-    ]
+    ],
 )
 def test_array(sa_type: types.TypeEngine, expected_type: type) -> None:  # type: ignore[type-arg]
     # Arrange
