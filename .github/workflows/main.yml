@@ -1,6 +1,6 @@
 name: main
 
-on: [push]
+on: [ push ]
 
 jobs:
   test:
@@ -42,3 +42,45 @@ jobs:
         with:
           name: coverage.xml
           path: coverage.xml
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-in-project: true
+
+      - name: Load dependency cache
+        id: dependency-cache
+        uses: actions/cache@v2
+        with:
+          path: .venv/
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.dependency-cache.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction
+
+      - name: Black
+        if: always()
+        run: |
+          source .venv/bin/activate
+          black --check alchemista/ tests/
+
+      - name: Mypy
+        if: always()
+        run: |
+          source .venv/bin/activate
+          mypy alchemista/ tests/
+
+      - name: Pylint
+        if: always()
+        run: |
+          source .venv/bin/activate
+          pylint alchemista/ tests/
