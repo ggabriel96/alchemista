@@ -1,5 +1,8 @@
 # Alchemista
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![codecov](https://codecov.io/gh/ggabriel96/alchemista/branch/main/graph/badge.svg?token=MYXKIH09FJ)](https://codecov.io/gh/ggabriel96/alchemista)
+
 Tools to generate Pydantic models from SQLAlchemy models.
 
 Still experimental.
