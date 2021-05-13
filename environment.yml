@@ -1,0 +1,9 @@
+# for use with conda (https://docs.conda.io/en/latest/miniconda.html):
+# conda env create -f environment.yml
+name: "alchemista"
+channels:
+  - defaults
+dependencies:
+  - pip=20
+  - python=3.6
+  # should I add poetry here?
