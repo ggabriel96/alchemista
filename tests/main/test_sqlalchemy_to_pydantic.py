@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 import datetime as dt
 import enum
 import time
@@ -172,7 +173,7 @@ def test_enum_schema() -> None:
         boolean_default = Column(Enum(Bool), default=Bool.TRUE)
         boolean_not_native = Column(Enum(Bool, native_enum=False), default=Bool.TRUE)
         boolean_values = Column(
-            Enum(Bool, values_callable=lambda enum: [item.value for item in enum]),
+            Enum(Bool, values_callable=lambda enum: [item.value for item in enum]),  # pylint: disable=not-an-iterable
             default=Bool.TRUE,
         )
         boolean_values_not_native = Column(
@@ -180,7 +181,7 @@ def test_enum_schema() -> None:
                 Bool,
                 native=False,
                 length=1,
-                values_callable=lambda enum: [item.value for item in enum],
+                values_callable=lambda enum: [item.value for item in enum],  # pylint: disable=not-an-iterable
             ),
             default=Bool.TRUE,
         )

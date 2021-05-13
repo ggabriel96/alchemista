@@ -39,11 +39,11 @@ def _extract_python_type(type_engine: TypeEngine) -> type:  # type: ignore[type-
 def infer_python_type(column: Column) -> type:  # type: ignore[type-arg]
     try:
         python_type = _extract_python_type(column.type)
-    except (AttributeError, NotImplementedError):
+    except (AttributeError, NotImplementedError) as ex:
         raise RuntimeError(
             f"Could not infer the Python type for {column}."
             " Check if the column type has a `python_type` in it or in `impl`"
-        )
+        ) from ex
 
     if python_type is list and hasattr(column.type, "item_type"):
         item_type = _extract_python_type(column.type.item_type)
