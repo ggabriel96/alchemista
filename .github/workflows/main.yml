@@ -37,11 +37,11 @@ jobs:
           pytest --cov=alchemista/ --cov-report=xml tests/
 
       - uses: codecov/codecov-action@v1
+        if: matrix.python-version == '3.6'
         with:
           fail_ci_if_error: true
           files: coverage.xml
-          flags: unittests
-          verbose: true
+          flags: python,unittests
 
   lint:
     runs-on: ubuntu-latest
