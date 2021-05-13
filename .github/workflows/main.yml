@@ -36,12 +36,12 @@ jobs:
           source .venv/bin/activate
           pytest --cov=alchemista/ --cov-report=xml tests/
 
-      # move to https://github.com/codecov/codecov-action in the future
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v2
+      - uses: codecov/codecov-action@v1
         with:
-          name: coverage.xml
-          path: coverage.xml
+          fail_ci_if_error: true
+          files: coverage.xml
+          flags: unittests
+          verbose: true
 
   lint:
     runs-on: ubuntu-latest
