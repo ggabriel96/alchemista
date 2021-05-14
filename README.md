@@ -71,9 +71,9 @@ There is also an `exclude` keyword argument that accepts a set of field names to
 
 ### The `info` dictionary
 
-All attributes, except for a default scalar value, can be specified via the `info` dictionary of `Column`.
+All attributes can be specified via the `info` dictionary of `Column`.
 This includes what is inferred from column attributes directly, like the description shown previously.
-Everything specified in `info` is preferred from what is inferred.
+**Everything specified in `info` is preferred from what is inferred**.
 
 For example, in the case above,
 
