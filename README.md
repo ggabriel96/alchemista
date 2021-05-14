@@ -21,7 +21,7 @@ pip install alchemista
 
 Simply call the `sqlalchemy_to_pydantic` function with a SQLAlchemy model.
 Each `Column` in its definition will result in an attribute of the generated model via the Pydantic `Field` function.
-The supported attributes are listed in `alchemista.field.FieldKwargs`.
+The supported attributes are listed in `alchemista.field.Info`.
 Some of them can be extracted from `Column` attributes directly, like the default value and the description.
 
 For example, a SQLAlchemy model like the following

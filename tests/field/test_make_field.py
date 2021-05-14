@@ -6,14 +6,14 @@ import pytest
 from pydantic.fields import Undefined
 from sqlalchemy import Column, Integer, String, Text
 
-from alchemista.field import FieldKwargs, make_field
+from alchemista.field import Info, make_field
 
 
 def test_field_kwargs_used_as_info() -> None:
     # Arrange
     column = Column(
         Integer,
-        info=FieldKwargs(
+        info=Info(
             alias="n",
             const=0,
             description="Some multiple of 2",

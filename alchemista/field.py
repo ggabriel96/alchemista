@@ -7,7 +7,7 @@ from sqlalchemy.types import TypeEngine
 from typing_extensions import TypedDict
 
 
-class FieldKwargs(TypedDict, total=False):
+class Info(TypedDict, total=False):
     alias: str
     allow_mutation: bool
     const: Any
@@ -61,7 +61,7 @@ def _get_default_scalar(column: Column) -> Any:  # type: ignore[type-arg]
     return None
 
 
-def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Column) -> None:  # type: ignore[type-arg]
+def _set_max_length_from_column_if_present(field_kwargs: Info, column: Column) -> None:  # type: ignore[type-arg]
     # some types have a length in the backend, but setting that interferes with the model generation
     # maybe we should list the types that we *should set* the length, instead of *not set* the length?
     if not isinstance(column.type, Enum):
@@ -78,9 +78,9 @@ def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Co
 
 
 def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
-    field_kwargs = FieldKwargs()
+    field_kwargs = Info()
     if column.info:
-        for key in FieldKwargs.__annotations__.keys():
+        for key in Info.__annotations__.keys():
             if key in column.info:
                 field_kwargs[key] = column.info[key]  # type: ignore[misc]
 
