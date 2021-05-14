@@ -11,6 +11,7 @@ class FieldKwargs(TypedDict, total=False):
     alias: str
     allow_mutation: bool
     const: Any
+    default: Any
     default_factory: Callable[[], Any]
     description: str
     example: str
@@ -88,9 +89,23 @@ def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
     if "description" not in field_kwargs and column.doc:
         field_kwargs["description"] = column.doc
 
-    if "default_factory" not in field_kwargs and column.default and column.default.is_callable:
-        field_kwargs["default_factory"] = column.default.arg.__wrapped__
+    if "default" in field_kwargs and "default_factory" in field_kwargs:
+        raise ValueError(
+            f"Both `default` and `default_factory` were specified in info of column `{column.name}`."
+            " These two attributes are mutually-exclusive"
+        )
+
+    if (
+        "default" not in field_kwargs
+        and "default_factory" not in field_kwargs
+        and column.default
+        and column.default.is_callable
+    ):
+        return cast(FieldInfo, Field(**field_kwargs, default_factory=column.default.arg.__wrapped__))
+
+    if "default_factory" in field_kwargs:
         return cast(FieldInfo, Field(**field_kwargs))
 
-    default = _get_default_scalar(column)
+    # pop `default` because it is not a keyword argument of `Field`
+    default = field_kwargs.pop("default") if "default" in field_kwargs else _get_default_scalar(column)
     return cast(FieldInfo, Field(default, **field_kwargs))
