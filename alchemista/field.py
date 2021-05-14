@@ -101,11 +101,13 @@ def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
         and column.default
         and column.default.is_callable
     ):
-        return cast(FieldInfo, Field(**field_kwargs, default_factory=column.default.arg.__wrapped__))
+        return cast(
+            FieldInfo, Field(**field_kwargs, default_factory=column.default.arg.__wrapped__)  # type: ignore[misc]
+        )
 
     if "default_factory" in field_kwargs:
         return cast(FieldInfo, Field(**field_kwargs))
 
     # pop `default` because it is not a keyword argument of `Field`
     default = field_kwargs.pop("default") if "default" in field_kwargs else _get_default_scalar(column)
-    return cast(FieldInfo, Field(default, **field_kwargs))
+    return cast(FieldInfo, Field(default, **field_kwargs))  # type: ignore[misc]
