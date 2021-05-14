@@ -33,7 +33,7 @@ from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
-class Person(Base):
+class PersonDB(Base):
     __tablename__ = "people"
 
     id = Column(Integer, primary_key=True)
@@ -46,7 +46,7 @@ could have a generated Pydantic model via
 ```python
 from alchemista import sqlalchemy_to_pydantic
 
-PersonPydantic = sqlalchemy_to_pydantic(Person)
+Person = sqlalchemy_to_pydantic(PersonDB)
 ```
 
 and would result in a Pydantic model equivalent to
@@ -68,6 +68,8 @@ Note that the string length from the column definition was sufficient to add a `
 Additionally, by default, the generated model will have `orm_mode=True`.
 That can be customized via the `config` keyword argument.
 There is also an `exclude` keyword argument that accepts a set of field names to _not_ include in the generated model.
+
+This example is available in a short executable form in the [`examples/`](examples/) directory.
 
 ### The `info` dictionary
 
