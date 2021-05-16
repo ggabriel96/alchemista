@@ -61,19 +61,12 @@ def _get_default_scalar(column: Column) -> Any:  # type: ignore[type-arg]
     return None
 
 
-def _set_max_length_from_column_if_present(field_kwargs: Info, column: Column) -> None:  # type: ignore[type-arg]
+def _maybe_set_max_length_from_column(field_kwargs: Info, column: Column) -> None:  # type: ignore[type-arg]
     # some types have a length in the backend, but setting that interferes with the model generation
     # maybe we should list the types that we *should set* the length, instead of *not set* the length?
     if not isinstance(column.type, Enum):
         sa_type_length = getattr(column.type, "length", None)
         if sa_type_length is not None:
-            info_max_length = field_kwargs.get("max_length")
-            if info_max_length and info_max_length != sa_type_length:
-                raise ValueError(
-                    f"max_length ({info_max_length}) of `info` differs from length set in column type"
-                    f" ({sa_type_length}) on column `{column.name}`. Either remove max_length from `info` (preferred)"
-                    " or set them to equal values"
-                )
             field_kwargs["max_length"] = sa_type_length
 
 
@@ -84,7 +77,8 @@ def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
             if key in column.info:
                 field_kwargs[key] = column.info[key]  # type: ignore[misc]
 
-    _set_max_length_from_column_if_present(field_kwargs, column)
+    if "max_length" not in field_kwargs:
+        _maybe_set_max_length_from_column(field_kwargs, column)
 
     if "description" not in field_kwargs and column.doc:
         field_kwargs["description"] = column.doc

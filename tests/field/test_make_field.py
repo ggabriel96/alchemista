@@ -118,18 +118,35 @@ def test_length_comes_from_column_definition() -> None:
     assert field.title is None
 
 
-def test_length_from_info_must_match_column_definition() -> None:
+def test_length_from_info_overrides_that_of_column() -> None:
     # Arrange
     max_length = 64
-    column = Column("column", String(max_length), info=dict(max_length=max_length + 1))
+    expected_max_length = 32
+    column = Column("column", String(max_length), info=dict(max_length=expected_max_length))
 
-    # Act / Assert
-    with pytest.raises(ValueError) as ex:
-        make_field(column)
-    assert str(ex.value) == (
-        f"max_length ({max_length + 1}) of `info` differs from length set in column type ({max_length}) on column"
-        f" `{column.name}`. Either remove max_length from `info` (preferred) or set them to equal values"
-    )
+    # Act
+    field = make_field(column)
+
+    # Assert
+    assert field.max_length == expected_max_length
+
+    assert field.alias is None
+    assert field.alias_priority is None
+    assert field.const is None
+    assert field.default is None
+    assert field.default_factory is None
+    assert field.description is None
+    assert field.extra == {}
+    assert field.ge is None
+    assert field.gt is None
+    assert field.le is None
+    assert field.lt is None
+    assert field.max_items is None
+    assert field.min_items is None
+    assert field.min_length is None
+    assert field.multiple_of is None
+    assert field.regex is None
+    assert field.title is None
 
 
 def test_default_comes_from_column_definition() -> None:
