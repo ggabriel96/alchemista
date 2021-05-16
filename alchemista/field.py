@@ -71,37 +71,30 @@ def _maybe_set_max_length_from_column(field_kwargs: Info, column: Column) -> Non
 
 
 def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
-    field_kwargs = Info()
+    info = Info()
     if column.info:
         for key in Info.__annotations__.keys():
             if key in column.info:
-                field_kwargs[key] = column.info[key]  # type: ignore[misc]
+                info[key] = column.info[key]  # type: ignore[misc]
 
-    if "max_length" not in field_kwargs:
-        _maybe_set_max_length_from_column(field_kwargs, column)
+    if "max_length" not in info:
+        _maybe_set_max_length_from_column(info, column)
 
-    if "description" not in field_kwargs and column.doc:
-        field_kwargs["description"] = column.doc
+    if "description" not in info and column.doc:
+        info["description"] = column.doc
 
-    if "default" in field_kwargs and "default_factory" in field_kwargs:
+    if "default" in info and "default_factory" in info:
         raise ValueError(
             f"Both `default` and `default_factory` were specified in info of column `{column.name}`."
             " These two attributes are mutually-exclusive"
         )
 
-    if (
-        "default" not in field_kwargs
-        and "default_factory" not in field_kwargs
-        and column.default
-        and column.default.is_callable
-    ):
-        return cast(
-            FieldInfo, Field(**field_kwargs, default_factory=column.default.arg.__wrapped__)  # type: ignore[misc]
-        )
+    if "default" not in info and "default_factory" not in info and column.default and column.default.is_callable:
+        return cast(FieldInfo, Field(**info, default_factory=column.default.arg.__wrapped__))  # type: ignore[misc]
 
-    if "default_factory" in field_kwargs:
-        return cast(FieldInfo, Field(**field_kwargs))
+    if "default_factory" in info:
+        return cast(FieldInfo, Field(**info))
 
     # pop `default` because it is not a keyword argument of `Field`
-    default = field_kwargs.pop("default") if "default" in field_kwargs else _get_default_scalar(column)
-    return cast(FieldInfo, Field(default, **field_kwargs))  # type: ignore[misc]
+    default = info.pop("default") if "default" in info else _get_default_scalar(column)
+    return cast(FieldInfo, Field(default, **info))  # type: ignore[misc]
