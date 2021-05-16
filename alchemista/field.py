@@ -7,10 +7,11 @@ from sqlalchemy.types import TypeEngine
 from typing_extensions import TypedDict
 
 
-class FieldKwargs(TypedDict, total=False):
+class Info(TypedDict, total=False):
     alias: str
     allow_mutation: bool
     const: Any
+    default: Any
     default_factory: Callable[[], Any]
     description: str
     example: str
@@ -60,37 +61,40 @@ def _get_default_scalar(column: Column) -> Any:  # type: ignore[type-arg]
     return None
 
 
-def _set_max_length_from_column_if_present(field_kwargs: FieldKwargs, column: Column) -> None:  # type: ignore[type-arg]
+def _maybe_set_max_length_from_column(field_kwargs: Info, column: Column) -> None:  # type: ignore[type-arg]
     # some types have a length in the backend, but setting that interferes with the model generation
     # maybe we should list the types that we *should set* the length, instead of *not set* the length?
     if not isinstance(column.type, Enum):
         sa_type_length = getattr(column.type, "length", None)
         if sa_type_length is not None:
-            info_max_length = field_kwargs.get("max_length")
-            if info_max_length and info_max_length != sa_type_length:
-                raise ValueError(
-                    f"max_length ({info_max_length}) of `info` differs from length set in column type"
-                    f" ({sa_type_length}) on column `{column.name}`. Either remove max_length from `info` (preferred)"
-                    " or set them to equal values"
-                )
             field_kwargs["max_length"] = sa_type_length
 
 
 def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
-    field_kwargs = FieldKwargs()
+    info = Info()
     if column.info:
-        for key in FieldKwargs.__annotations__.keys():
+        for key in Info.__annotations__.keys():
             if key in column.info:
-                field_kwargs[key] = column.info[key]  # type: ignore[misc]
+                info[key] = column.info[key]  # type: ignore[misc]
 
-    _set_max_length_from_column_if_present(field_kwargs, column)
+    if "max_length" not in info:
+        _maybe_set_max_length_from_column(info, column)
 
-    if "description" not in field_kwargs and column.doc:
-        field_kwargs["description"] = column.doc
+    if "description" not in info and column.doc:
+        info["description"] = column.doc
 
-    if "default_factory" not in field_kwargs and column.default and column.default.is_callable:
-        field_kwargs["default_factory"] = column.default.arg.__wrapped__
-        return cast(FieldInfo, Field(**field_kwargs))
+    if "default" in info and "default_factory" in info:
+        raise ValueError(
+            f"Both `default` and `default_factory` were specified in info of column `{column.name}`."
+            " These two attributes are mutually-exclusive"
+        )
 
-    default = _get_default_scalar(column)
-    return cast(FieldInfo, Field(default, **field_kwargs))
+    if "default" not in info and "default_factory" not in info and column.default and column.default.is_callable:
+        return cast(FieldInfo, Field(**info, default_factory=column.default.arg.__wrapped__))  # type: ignore[misc]
+
+    if "default_factory" in info:
+        return cast(FieldInfo, Field(**info))
+
+    # pop `default` because it is not a keyword argument of `Field`
+    default = info.pop("default") if "default" in info else _get_default_scalar(column)
+    return cast(FieldInfo, Field(default, **info))  # type: ignore[misc]
