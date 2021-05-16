@@ -1,14 +1,11 @@
 from typing import Container, Optional, Type
 
-from pydantic import BaseConfig, BaseModel, create_model
+from pydantic import BaseModel, create_model
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.properties import ColumnProperty
 
 from alchemista.field import infer_python_type, make_field
-
-
-class OrmConfig(BaseConfig):
-    orm_mode = True
+from alchemista.config import OrmConfig
 
 
 def sqlalchemy_to_pydantic(
