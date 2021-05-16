@@ -21,8 +21,6 @@ pip install alchemista
 
 Simply call the `sqlalchemy_to_pydantic` function with a SQLAlchemy model.
 Each `Column` in its definition will result in an attribute of the generated model via the Pydantic `Field` function.
-The supported attributes are listed in `alchemista.field.Info`.
-Some of them can be extracted from `Column` attributes directly, like the default value and the description.
 
 For example, a SQLAlchemy model like the following
 
@@ -71,11 +69,19 @@ There is also an `exclude` keyword argument that accepts a set of field names to
 
 This example is available in a short executable form in the [`examples/`](examples/) directory.
 
-### The `info` dictionary
+## `Field` arguments and `info`
 
-All attributes can be specified via the `info` dictionary of `Column`.
-This includes what is inferred from column attributes directly, like the description shown previously.
-**Everything specified in `info` is preferred from what is inferred**.
+Currently, the type, default value (either scalar or callable), and the description (from the `doc` attribute) are
+extracted directly from the `Column` definition.
+However, except for the type, all of them can be overridden via the `info` dictionary attribute.
+All other custom arguments to the `Field` function are specified there too.
+The supported keys are listed in `alchemista.field.Info`.
+
+**Everything specified in `info` is preferred from what has been extracted from `Column`**.
+This means that the default value and the description can be **overridden** if so desired.
+Also, similarly to using Pydantic directly, `default` and `default_factory` are mutually-exclusive,
+so they cannot be used together.
+Use `default_factory` if the default value comes from calling a function (without any arguments).
 
 For example, in the case above,
 
