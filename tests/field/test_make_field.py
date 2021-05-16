@@ -9,7 +9,7 @@ from sqlalchemy import Column, Integer, String, Text
 from alchemista.field import Info, make_field
 
 
-def test_field_kwargs_used_as_info() -> None:
+def test_info_type_used_as_info() -> None:
     # Arrange
     column = Column(
         Integer,
