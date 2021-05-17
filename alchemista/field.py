@@ -105,15 +105,20 @@ def fields_from(
     db_model: type,
     *,
     exclude: Optional[Container[str]] = None,
+    include: Optional[Container[str]] = None,
 ) -> Dict[str, Tuple[type, FieldInfo]]:
-    exclude = exclude or []
+    if exclude and include:
+        raise ValueError("`exclude` and `include` are mutually-exclusive")
     mapper = inspect(db_model)
+    candidate_attrs = mapper.attrs
+    if exclude:
+        candidate_attrs = (attr for attr in mapper.attrs if attr.key not in exclude)
+    elif include:
+        candidate_attrs = (attr for attr in mapper.attrs if attr.key in include)
     fields = {}
-    for attr in mapper.attrs:
+    for attr in candidate_attrs:
         if isinstance(attr, ColumnProperty) and attr.columns:
             name = attr.key
-            if name in exclude:
-                continue
             column = attr.columns[0]
             python_type = infer_python_type(column)
             field = make_field(column)
