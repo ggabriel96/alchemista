@@ -31,9 +31,7 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Run tests
-        run: |
-          source .venv/bin/activate
-          pytest --cov=alchemista/ --cov-report=xml tests/
+        run: pytest --cov=alchemista/ --cov-report=xml tests/
 
       - uses: codecov/codecov-action@v1
         if: matrix.python-version == '3.6'
@@ -67,18 +65,12 @@ jobs:
 
       - name: Black
         if: always()
-        run: |
-          source .venv/bin/activate
-          black --check alchemista/ tests/
+        run: black --check alchemista/ tests/
 
       - name: Mypy
         if: always()
-        run: |
-          source .venv/bin/activate
-          mypy alchemista/ tests/
+        run: mypy alchemista/ tests/
 
       - name: Pylint
         if: always()
-        run: |
-          source .venv/bin/activate
-          pylint alchemista/ tests/
+        run: pylint alchemista/ tests/
