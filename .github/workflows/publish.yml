@@ -17,6 +17,7 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.4
         with:
+          virtualenvs-create: true
           virtualenvs-in-project: true
 
       - name: Load dependency cache
@@ -24,10 +25,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv/
-          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          key: venv-v0-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.dependency-cache.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
 
       - name: Publish to PyPI

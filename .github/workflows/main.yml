@@ -18,6 +18,7 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.4
         with:
+          virtualenvs-create: true
           virtualenvs-in-project: true
 
       - name: Load dependency cache
@@ -25,16 +26,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv/
-          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          key: venv-v0-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.dependency-cache.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
 
       - name: Run tests
-        run: |
-          source .venv/bin/activate
-          pytest --cov=alchemista/ --cov-report=xml tests/
+        run: poetry run pytest --cov=alchemista/ --cov-report=xml --verbose tests/
 
       - uses: codecov/codecov-action@v1
         if: matrix.python-version == '3.6'
@@ -54,38 +52,27 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.4
         with:
-          virtualenvs-create: false
-#          virtualenvs-in-project: true
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
       - name: Load dependency cache
         id: dependency-cache
         uses: actions/cache@v2
         with:
           path: .venv/
-          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          key: venv-v0-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: poetry install --no-interaction
 
       - name: Black
         if: always()
-        run: |
-          black --check --verbose alchemista/ tests/
-
-      - name: isort
-        if: always()
-        run: |
-          poetry run isort --check-only --verbose .
+        run: poetry run black --check --verbose alchemista/ tests/
 
       - name: Mypy
         if: always()
-        run: |
-          python -V
-          poetry run mypy --verbose alchemista/ tests/
-          mypy --verbose alchemista/ tests/
+        run: poetry run mypy --verbose alchemista/ tests/
 
       - name: Pylint
         if: always()
-        run: |
-          poetry run pylint --version
-          poetry run pylint --verbose alchemista/ tests/
+        run: poetry run pylint --verbose alchemista/ tests/
