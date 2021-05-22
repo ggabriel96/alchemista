@@ -54,7 +54,8 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.4
         with:
-          virtualenvs-in-project: true
+          virtualenvs-create: false
+#          virtualenvs-in-project: true
 
       - name: Load dependency cache
         id: dependency-cache
@@ -64,30 +65,27 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
-#        if: steps.dependency-cache.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
 
       - name: Black
         if: always()
         run: |
-          source .venv/bin/activate
-          black --check alchemista/ tests/
+          black --check --verbose alchemista/ tests/
 
       - name: isort
         if: always()
         run: |
-          source .venv/bin/activate
           poetry run isort --check-only --verbose .
 
       - name: Mypy
         if: always()
         run: |
-          source .venv/bin/activate
+          python -V
           poetry run mypy --verbose alchemista/ tests/
+          mypy --verbose alchemista/ tests/
 
       - name: Pylint
         if: always()
         run: |
-          source .venv/bin/activate
           poetry run pylint --version
           poetry run pylint --verbose alchemista/ tests/
