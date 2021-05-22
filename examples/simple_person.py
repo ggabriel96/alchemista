@@ -1,9 +1,9 @@
 import json
 
-from alchemista import sqlalchemy_to_pydantic
 from sqlalchemy import Column, Integer, String, create_engine, select
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from alchemista import sqlalchemy_to_pydantic
 
 Base = declarative_base()
 engine = create_engine("sqlite://")
