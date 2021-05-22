@@ -77,17 +77,17 @@ jobs:
         if: always()
         run: |
           source .venv/bin/activate
-          isort --check-only --verbose .
+          poetry run isort --check-only --verbose .
 
       - name: Mypy
         if: always()
         run: |
           source .venv/bin/activate
-          mypy --verbose alchemista/ tests/
+          poetry run mypy --verbose alchemista/ tests/
 
       - name: Pylint
         if: always()
         run: |
           source .venv/bin/activate
-          pylint --version
-          pylint --verbose alchemista/ tests/
+          poetry run pylint --version
+          poetry run pylint --verbose alchemista/ tests/
