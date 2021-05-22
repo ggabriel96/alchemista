@@ -27,7 +27,6 @@ jobs:
           key: venv-v1-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.dependency-cache.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
 
       - name: Publish to PyPI
