@@ -64,7 +64,7 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.dependency-cache.outputs.cache-hit != 'true'
+#        if: steps.dependency-cache.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
 
       - name: Black
@@ -83,10 +83,11 @@ jobs:
         if: always()
         run: |
           source .venv/bin/activate
-          mypy alchemista/ tests/
+          mypy --verbose alchemista/ tests/
 
       - name: Pylint
         if: always()
         run: |
           source .venv/bin/activate
-          pylint alchemista/ tests/
+          pylint --version
+          pylint --verbose alchemista/ tests/
