@@ -23,7 +23,7 @@ jobs:
       - name: Load dependency cache
         id: dependency-cache
         uses: actions/cache@v2
-        with: &cache-args
+        with:
           path: .venv/
           key: venv-v1-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
@@ -57,7 +57,8 @@ jobs:
         id: dependency-cache
         uses: actions/cache@v2
         with:
-          <<: *cache-args
+          path: .venv/
+          key: venv-v1-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: poetry install --no-interaction
