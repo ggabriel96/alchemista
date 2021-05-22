@@ -14,4 +14,7 @@ def model_from(
     __config__: Type[BaseConfig] = OrmConfig,
 ) -> Type[BaseModel]:
     fields = fields_from(db_model, exclude=exclude, include=include)
-    return cast(Type[BaseModel], create_model(db_model.__name__, __config__=__config__, **fields))
+    return cast(
+        Type[BaseModel],
+        create_model(db_model.__name__, __config__=__config__, **fields),  # type: ignore[arg-type]
+    )

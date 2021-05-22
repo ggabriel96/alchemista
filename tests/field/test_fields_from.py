@@ -25,7 +25,7 @@ def test_exclude() -> None:
 
     # Act
     fields = fields_from(Test, exclude={"id", "number2"})
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test = TestPydantic(number1=1, number3=3)
 
     # Assert
@@ -60,7 +60,7 @@ def test_include() -> None:
 
     # Act
     fields = fields_from(Test, include={"id", "number2"})
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test = TestPydantic(id=1, number2=2)
 
     # Assert
@@ -111,7 +111,7 @@ def test_optional_behavior() -> None:
 
     # Act
     fields = fields_from(Test)
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test = TestPydantic(id=1, req_str="str")
 
     # Assert
@@ -163,7 +163,7 @@ def test_lambda_as_default_factory() -> None:
 
     # Act
     fields = fields_from(Test)
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test = TestPydantic(id=1)
 
     # Assert
@@ -197,7 +197,7 @@ def test_datetime_now_as_default_factory() -> None:
 
     # Act
     fields = fields_from(Test)
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test1 = TestPydantic(id=1)
     time.sleep(0.1)
     test2 = TestPydantic(id=2)
@@ -240,7 +240,9 @@ def test_allow_mutation() -> None:
 
     # Act
     fields = fields_from(Test)
-    TestPydantic = pydantic.create_model(Test.__name__, __config__=ValidateAssignment, **fields)
+    TestPydantic = pydantic.create_model(  # type: ignore[var-annotated]
+        Test.__name__, __config__=ValidateAssignment, **fields  # type: ignore[arg-type, var-annotated]
+    )
     test = TestPydantic(id=1, number=0, number_mut=1)
 
     # Assert
@@ -305,7 +307,7 @@ def test_enum_schema() -> None:
 
     # Act
     fields = fields_from(Test)
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test = TestPydantic(id=1)
 
     # Assert
@@ -385,7 +387,7 @@ def test_all_pydantic_attributes_from_info() -> None:
 
     # Act
     fields = fields_from(Test)
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test = TestPydantic(id=1, ge_le=0, gt_lt=1, items=[], multiple=2, text="txt")
 
     # Assert
@@ -440,7 +442,7 @@ def test_keyed_column_schema() -> None:
 
     # Act
     fields = fields_from(Test)
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
     test = TestPydantic(id=1, text="txt")
 
     # Assert
