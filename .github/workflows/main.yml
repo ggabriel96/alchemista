@@ -26,7 +26,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv/
-          key: venv-v1-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          key: venv-v0-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: poetry install --no-interaction
@@ -60,7 +60,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv/
-          key: venv-v1-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          key: venv-v0-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: poetry install --no-interaction
