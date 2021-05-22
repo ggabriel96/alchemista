@@ -25,11 +25,25 @@ def test_exclude() -> None:
 
     # Act
     fields = fields_from(Test, exclude={"id", "number2"})
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    test = TestPydantic(number1=1, number3=3)
 
     # Assert
     assert len(fields) == 2
     assert "number1" in fields
     assert "number3" in fields
+
+    assert getattr(test, "number1") == 1
+    assert getattr(test, "number3") == 3
+
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "number1": {"title": "Number1", "type": "integer"},
+            "number3": {"title": "Number3", "type": "integer"},
+        },
+    }
 
 
 def test_include() -> None:
@@ -46,11 +60,23 @@ def test_include() -> None:
 
     # Act
     fields = fields_from(Test, include={"id", "number2"})
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)
+    test = TestPydantic(id=1, number2=2)
 
     # Assert
     assert len(fields) == 2
     assert "id" in fields
     assert "number2" in fields
+
+    assert getattr(test, "id") == 1
+    assert getattr(test, "number2") == 2
+
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {"id": {"title": "Id", "type": "integer"}, "number2": {"title": "Number2", "type": "integer"}},
+        "required": ["id"],
+    }
 
 
 def test_exclude_and_include_are_mutually_exclusive() -> None:
