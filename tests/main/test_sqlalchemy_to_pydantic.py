@@ -21,6 +21,7 @@ def test_exclude_removes_fields_from_generated_model() -> None:
     # Assert
     test = TestPydantic(id=1)
     assert getattr(test, "id") == 1
+
     assert TestPydantic.schema() == {
         "title": "Test",
         "type": "object",
