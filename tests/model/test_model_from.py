@@ -1,4 +1,5 @@
 # pylint: disable=invalid-name
+import pytest
 from sqlalchemy import Column, Integer
 from sqlalchemy.orm import declarative_base
 
@@ -90,3 +91,20 @@ def test_include_keeps_fields_in_generated_model() -> None:
             "number": {"title": "Number", "type": "integer"},
         },
     }
+
+
+def test_exclude_and_include_are_mutually_exclusive() -> None:
+    # Arrange
+    Base = declarative_base()
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        number1 = Column(Integer)
+        number2 = Column(Integer)
+
+    # Act / Assert
+    with pytest.raises(ValueError) as ex:
+        model_from(Test, exclude={"number1"}, include={"number2"})
+    assert str(ex.value) == "`exclude` and `include` are mutually-exclusive"
