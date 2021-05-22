@@ -19,6 +19,7 @@ jobs:
         uses: snok/install-poetry@v1.1.4
         with:
           virtualenvs-create: false
+          virtualenvs-in-project: true
 
       - name: Load dependency cache
         id: dependency-cache
@@ -52,6 +53,7 @@ jobs:
         uses: snok/install-poetry@v1.1.4
         with:
           virtualenvs-create: false
+          virtualenvs-in-project: true
 
       - name: Load dependency cache
         id: dependency-cache
