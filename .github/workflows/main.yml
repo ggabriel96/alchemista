@@ -73,6 +73,12 @@ jobs:
           source .venv/bin/activate
           black --check alchemista/ tests/
 
+      - name: isort
+        if: always()
+        run: |
+          source .venv/bin/activate
+          isort --check-only --verbose .
+
       - name: Mypy
         if: always()
         run: |
