@@ -3,6 +3,7 @@ extension-pkg-whitelist = pydantic
 
 [MESSAGES CONTROL]
 disable =
+  duplicate-code,
   missing-class-docstring,
   missing-function-docstring,
   missing-module-docstring,
