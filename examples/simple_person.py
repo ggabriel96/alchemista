@@ -1,9 +1,9 @@
 import json
 
-from alchemista import sqlalchemy_to_pydantic
 from sqlalchemy import Column, Integer, String, create_engine, select
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from alchemista import model_from
 
 Base = declarative_base()
 engine = create_engine("sqlite://")
@@ -17,7 +17,7 @@ class PersonDB(Base):
     name = Column(String(128), nullable=False, doc="Full name")
 
 
-Person = sqlalchemy_to_pydantic(PersonDB)
+Person = model_from(PersonDB)
 print("Schema of generated model:")
 print(json.dumps(Person.schema(), indent=4))
 

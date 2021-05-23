@@ -19,7 +19,7 @@ pip install alchemista
 
 ## Usage
 
-Simply call the `sqlalchemy_to_pydantic` function with a SQLAlchemy model.
+Simply call the `model_from` function with a SQLAlchemy model.
 Each `Column` in its definition will result in an attribute of the generated model via the Pydantic `Field` function.
 
 For example, a SQLAlchemy model like the following
@@ -42,9 +42,9 @@ class PersonDB(Base):
 could have a generated Pydantic model via
 
 ```python
-from alchemista import sqlalchemy_to_pydantic
+from alchemista import model_from
 
-Person = sqlalchemy_to_pydantic(PersonDB)
+Person = model_from(PersonDB)
 ```
 
 and would result in a Pydantic model equivalent to
@@ -64,8 +64,11 @@ class Person(BaseModel):
 
 Note that the string length from the column definition was sufficient to add a `max_length` constraint.
 Additionally, by default, the generated model will have `orm_mode=True`.
-That can be customized via the `config` keyword argument.
-There is also an `exclude` keyword argument that accepts a set of field names to _not_ include in the generated model.
+That can be customized via the `__config__` keyword argument.
+
+There is also an `exclude` keyword argument that accepts a set of field names to _not_ include in the generated model,
+and an `include` keyword argument accepts a set of field names to _do_ include in the generated model.
+However, they are mutually exclusive and cannot be used together.
 
 This example is available in a short executable form in the [`examples/`](examples/) directory.
 

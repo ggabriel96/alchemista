@@ -1,8 +1,9 @@
-from typing import Any, Callable, List, cast
+from typing import Any, Callable, Container, Dict, List, Optional, Tuple, cast
 
 from pydantic import Field
 from pydantic.fields import FieldInfo
-from sqlalchemy import Column, Enum
+from sqlalchemy import Column, Enum, inspect
+from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.types import TypeEngine
 from typing_extensions import TypedDict
 
@@ -98,3 +99,28 @@ def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
     # pop `default` because it is not a keyword argument of `Field`
     default = info.pop("default") if "default" in info else _get_default_scalar(column)
     return cast(FieldInfo, Field(default, **info))  # type: ignore[misc]
+
+
+def fields_from(
+    db_model: type,
+    *,
+    exclude: Optional[Container[str]] = None,
+    include: Optional[Container[str]] = None,
+) -> Dict[str, Tuple[type, FieldInfo]]:
+    if exclude and include:
+        raise ValueError("`exclude` and `include` are mutually-exclusive")
+    mapper = inspect(db_model)
+    candidate_attrs = mapper.attrs
+    if exclude:
+        candidate_attrs = (attr for attr in mapper.attrs if attr.key not in exclude)
+    elif include:
+        candidate_attrs = (attr for attr in mapper.attrs if attr.key in include)
+    fields = {}
+    for attr in candidate_attrs:
+        if isinstance(attr, ColumnProperty) and attr.columns:
+            name = attr.key
+            column = attr.columns[0]
+            python_type = infer_python_type(column)
+            field = make_field(column)
+            fields[name] = (python_type, field)
+    return fields
