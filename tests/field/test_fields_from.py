@@ -8,7 +8,7 @@ import pytest
 from sqlalchemy import ARRAY, Column, DateTime, Enum, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
-from alchemista.field import fields_from
+from alchemista import fields_from
 
 
 def test_exclude() -> None:
