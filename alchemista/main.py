@@ -7,7 +7,7 @@ from alchemista.config import OrmConfig
 from alchemista.model import model_from
 
 
-@deprecated("Migrate to directly using `model_from`", version="0.2.0")
+@deprecated("Please migrate to using `model_from` directly", version="0.2.0")
 def sqlalchemy_to_pydantic(
     db_model: type,
     *,
