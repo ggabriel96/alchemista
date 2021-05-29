@@ -39,7 +39,7 @@ line_length = 120
 
 [tool.semantic_release]
 branch = "semantic-release"
-build_command = "poetry publish --build --no-interaction"
+build_command = "poetry build"
 commit_author = "github-actions <actions@github.com>"
 major_on_zero = false
 version_toml = "pyproject.toml:tool.poetry.version"
