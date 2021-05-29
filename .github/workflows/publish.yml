@@ -35,6 +35,7 @@ jobs:
 
       - name: Publish to PyPI
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.API_TOKEN }}
         run: |
           poetry config pypi-token.pypi "${POETRY_PYPI_TOKEN_PYPI}"
