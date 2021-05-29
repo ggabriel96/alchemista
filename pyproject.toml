@@ -42,5 +42,5 @@ branch = "semantic-release"
 build_command = "poetry build"
 commit_author = "github-actions <actions@github.com>"
 major_on_zero = false
-repository = "https://test.pypi.org/legacy/"
+repository = "testpypi"
 version_toml = "pyproject.toml:tool.poetry.version"
