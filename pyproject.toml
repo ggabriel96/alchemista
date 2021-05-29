@@ -36,3 +36,10 @@ line-length = 120
 [tool.isort]
 profile = "black"
 line_length = 120
+
+[tool.semantic_release]
+branch = "main"
+build_command = "poetry build"
+commit_author = "github-actions <actions@github.com>"
+major_on_zero = false
+version_toml = "pyproject.toml:tool.poetry.version"
