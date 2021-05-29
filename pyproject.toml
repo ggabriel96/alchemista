@@ -25,6 +25,7 @@ pytest-cov = "^2.11.1"
 SQLAlchemy-Utc = "^0.12.0"
 sqlalchemy2-stubs = "^0.0.1-alpha.10"
 python-semantic-release = "^7.15.5"
+commitizen = "^2.17.8"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
