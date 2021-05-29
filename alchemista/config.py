@@ -6,5 +6,5 @@ class OrmConfig(BaseConfig):
 
 
 class CRUDConfig(BaseConfig):
-    allow_mutation = False
+    allow_mutation = True
     extra = Extra.forbid
