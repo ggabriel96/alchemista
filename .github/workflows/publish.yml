@@ -1,15 +1,18 @@
 name: publish
 
-on:
-  push:
-    branches: [main]
+on: [push]
+#  push:
+#    branches: [main]
 
 jobs:
   pypi:
-    environment: PyPI
+    environment: TestPyPI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-python@v2
         with:
           python-version: '3.6'
@@ -35,4 +38,4 @@ jobs:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.API_TOKEN }}
         run: |
           poetry config pypi-token.pypi "${POETRY_PYPI_TOKEN_PYPI}"
-          poetry publish --build --no-interaction
+          poetry run semantic-release publish
