@@ -6,6 +6,8 @@ from sqlalchemy import Column, Enum, inspect
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.types import TypeEngine
 
+from alchemista import func
+
 
 class Info(TypedDict, total=False):
     alias: str
@@ -105,6 +107,7 @@ def fields_from(
     *,
     exclude: Optional[Container[str]] = None,
     include: Optional[Container[str]] = None,
+    transform: Callable[[str, type, FieldInfo], Tuple[type, FieldInfo]] = func.unchanged,
 ) -> Dict[str, Tuple[type, FieldInfo]]:
     if exclude and include:
         raise ValueError("`exclude` and `include` are mutually-exclusive")
@@ -121,5 +124,5 @@ def fields_from(
             column = attr.columns[0]
             python_type = infer_python_type(column)
             field = make_field(column)
-            fields[name] = (python_type, field)
+            fields[name] = transform(name, python_type, field)
     return fields
