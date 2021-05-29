@@ -53,8 +53,8 @@ def test_type_var() -> None:
     type_var = TypeVar("type_var")
 
     # Act / Assert
-    assert is_optional(type_var) is False
-    assert is_optional(Optional[type_var]) is True
+    assert is_optional(type_var) is False  # type: ignore[arg-type]
+    assert is_optional(Optional[type_var]) is True  # type: ignore[arg-type]
 
 
 def test_generics() -> None:
@@ -66,4 +66,4 @@ def test_generics() -> None:
 
     # Act / Assert
     assert is_optional(Gen) is False
-    assert is_optional(Optional[Gen]) is True
+    assert is_optional(Optional[Gen]) is True  # type: ignore[arg-type]
