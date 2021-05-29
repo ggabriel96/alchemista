@@ -7,7 +7,7 @@ from alchemista.func import nonify
 
 def test_all_columns_become_optional_and_nullable_with_none_as_default() -> None:
     # Arrange
-    Base = declarative_base()
+    Base = declarative_base()  # pylint: disable=invalid-name
 
     class Test(Base):
         __tablename__ = "test"
@@ -23,7 +23,7 @@ def test_all_columns_become_optional_and_nullable_with_none_as_default() -> None
         number8 = Column(Integer, default=1, nullable=True)
 
     # Act
-    TestPydantic = model_from(Test, transform=nonify)
+    TestPydantic = model_from(Test, transform=nonify)  # pylint: disable=invalid-name
     test = TestPydantic()
 
     # Assert
