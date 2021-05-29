@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-python@v2
         with:
           python-version: '3.6'
@@ -30,9 +33,13 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
-      - name: Publish to PyPI
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.API_TOKEN }}
+      - name: Configure git
         run: |
-          poetry config pypi-token.pypi "${POETRY_PYPI_TOKEN_PYPI}"
-          poetry publish --build --no-interaction
+          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.API_TOKEN }}
+        run: poetry run semantic-release publish
