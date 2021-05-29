@@ -1,7 +1,4 @@
-try:  # pragma: nocover
-    from importlib.metadata import version  # type: ignore
-except ImportError:
-    from importlib_metadata import version
+from importlib.metadata import version
 
 from alchemista.field import fields_from
 from alchemista.main import sqlalchemy_to_pydantic
