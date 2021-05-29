@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2021-05-29)
+### Fix
+* Change something to test deploy ([`82a454b`](https://github.com/ggabriel96/alchemista/commit/82a454b975c9c4f5af57b72afd372b765136b3ed))
+
 ## v0.4.0 (2021-05-29)
 ### Feature
 * Add back CRUDConfig ([`dcf4485`](https://github.com/ggabriel96/alchemista/commit/dcf4485e8b390b86075a1a1d3a53b96dea9218fb))
