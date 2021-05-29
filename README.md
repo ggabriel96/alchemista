@@ -119,6 +119,83 @@ from pydantic import create_model
 MyModel = create_model("MyModel", **fields_from(DBModel))
 ```
 
+## `transform`
+
+Both `fields_from` and `model_from` have a `transform` argument.
+It is a callable used to transform the fields before generating a Pydantic model.
+The provided transformation functions are in the `func` module.
+By default, the `transform` argument is set to `func.unchanged`, which, as the name implies, does nothing.
+
+The other provided transformation function is `func.nonify`, which makes all fields optional (if they weren't already)
+    and nullable and sets the default value to `None`.
+This is useful when some kind of "input model" is desired.
+For example, the database model might have an auto-generated primary key, and some other columns with default values.
+When updating an entity of this model, one wouldn't want to receive the primary key as an update candidate (which can
+    be solved using the `exclude` argument) and probably wouldn't want the fields with default values to actually have
+    these values, since the update is meant to change only what the user asked to update.
+
+For example:
+
+```python
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
+
+from alchemista import model_from
+from alchemista.func import nonify
+
+
+Base = declarative_base()
+
+class PersonDB(Base):
+    __tablename__ = "people"
+
+    id = Column(Integer, primary_key=True)
+    age = Column(Integer, default=0, nullable=False, doc="Age in years")
+    name = Column(String(128), nullable=False, doc="Full name")
+
+
+PersonInput = model_from(PersonDB, exclude={"id"}, transform=nonify)
+```
+
+The model `PersonInput` is equivalent to the hand-written version below:
+
+```python
+from typing import Optional
+
+from pydantic import BaseModel, Field
+
+
+class PersonInput(BaseModel):
+    age: Optional[int] = Field(None, description="Age in years")
+    name: Optional[str] = Field(None, max_length=128, description="Full name")
+
+    class Config:
+        orm_mode = True
+```
+
+Note that both `age` and `name` weren't originally nullable (`Optional`, in Python) and the name was required (age
+    wasn't because it has a default value).
+Now, both fields are nullable and their default value is `None`.
+
+### User-defined transformations
+
+You can also create your own transformation functions.
+The expected signature is as follows:
+
+```python
+from typing import Tuple
+
+from pydantic.fields import FieldInfo
+
+def transformation(name: str, python_type: type, field: FieldInfo) -> Tuple[type, FieldInfo]:
+    pass
+```
+
+Where `name` is the name of the field currently being created, `python_type` is its Python type, and `field` is its full
+    Pydantic field specification.
+The return type is a tuple of the Python type and the field specification.
+These two can be changed freely (the name can't).
+
 ## License
 
 This project is licensed under the terms of the MIT license.
