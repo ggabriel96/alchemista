@@ -98,6 +98,27 @@ would instead result in
 name: str = Field(..., max_length=64)
 ```
 
+## `fields_from` and `model_from`
+
+The `fields_from` function is the function that actually inspects the SQLAlchemy model and builds a dictionary
+    in a format that can be used to generate a Pydantic model.
+So `model_from` is just a shortcut for calling `fields_from` and then `pydantic.create_model`.
+The model name that `model_from` sets is `db_model.__name__`.
+
+If desired, or extra control is needed, `pydantic.create_model` can be used directly, in conjunction with `fields_from`.
+This allows the customization of the name of the model that will be created and the specification of other
+    `create_model` arguments, like `__base__` and `__validators__` (`model_from` currently only accepts `__config__`).
+
+For example:
+
+```python
+from alchemista import fields_from
+from pydantic import create_model
+
+
+MyModel = create_model("MyModel", **fields_from(DBModel))
+```
+
 ## License
 
 This project is licensed under the terms of the MIT license.
