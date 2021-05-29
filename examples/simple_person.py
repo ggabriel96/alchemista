@@ -26,10 +26,10 @@ Base.metadata.create_all(engine)
 SessionMaker = sessionmaker(bind=engine)
 
 person = Person.construct(name="Someone", age=25)
-with SessionMaker.begin() as session:
+with SessionMaker.begin() as session:  # pylint: disable=no-member
     session.add(PersonDB(**person.dict()))
 
-with SessionMaker.begin() as session:
+with SessionMaker.begin() as session:  # pylint: disable=no-member
     person_db = session.execute(select(PersonDB)).scalar_one()
-    person = Person.from_orm(person_db)
+    person = Person.from_orm(person_db)  # type: ignore
     print("Instance of model loaded from database:", person)

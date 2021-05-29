@@ -1,11 +1,10 @@
-from typing import Any, Callable, Container, Dict, List, Optional, Tuple, cast
+from typing import Any, Callable, Container, Dict, List, Optional, Tuple, TypedDict, cast
 
 from pydantic import Field
 from pydantic.fields import FieldInfo
 from sqlalchemy import Column, Enum, inspect
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.types import TypeEngine
-from typing_extensions import TypedDict
 
 
 class Info(TypedDict, total=False):
@@ -76,7 +75,7 @@ def _maybe_set_max_length_from_column(field_kwargs: Info, column: Column) -> Non
 def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
     info = Info()
     if column.info:
-        for key in Info.__annotations__.keys():
+        for key in Info.__annotations__.keys():  # pylint: disable=no-member
             if key in column.info:
                 info[key] = column.info[key]  # type: ignore[misc]
 
