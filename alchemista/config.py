@@ -6,6 +6,5 @@ class OrmConfig(BaseConfig):
 
 
 class CRUDConfig(BaseConfig):
-    # we generally don't want CRUD input to be empty, mutable, or have unexpected fields
-    allow_mutation = False
+    allow_mutation = True
     extra = Extra.forbid
