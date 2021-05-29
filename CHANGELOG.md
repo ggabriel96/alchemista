@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.2 (2021-05-29)
+### Fix
+* Change something to test deploy ([`a026ffd`](https://github.com/ggabriel96/alchemista/commit/a026ffd31cfd0244b943f60eba3b4967372360df))
+
 ## v0.4.1 (2021-05-29)
 ### Fix
 * Change something to test deploy ([`82a454b`](https://github.com/ggabriel96/alchemista/commit/82a454b975c9c4f5af57b72afd372b765136b3ed))
