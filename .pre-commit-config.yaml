@@ -1,3 +1,4 @@
+default_stages: [commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
@@ -18,3 +19,8 @@ repos:
     rev: 21.5b1
     hooks:
       - id: black
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.17.8
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
