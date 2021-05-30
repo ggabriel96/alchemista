@@ -1,8 +1,56 @@
+from typing import Optional
+
+import pydantic
 from sqlalchemy import Column, Integer
 from sqlalchemy.orm import declarative_base
 
-from alchemista import model_from
+from alchemista import fields_from, model_from
 from alchemista.func import nonify
+
+
+def test_default_and_default_factory_and_const_become_none() -> None:
+    # Arrange
+    Base = declarative_base()  # pylint: disable=invalid-name
+
+    class Test(Base):
+        __tablename__ = "test"
+
+        id = Column(Integer, primary_key=True)
+        number1 = Column(Integer, default=1, nullable=False, info=dict(const=1))
+        number2 = Column(Integer, default=lambda: 2, nullable=False, info=dict(const=2))
+
+    # Act
+    fields = fields_from(Test, transform=nonify)
+    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
+    test = TestPydantic()
+
+    # Assert
+    assert len(fields) == 3
+    assert "id" in fields
+    assert "number1" in fields
+    assert "number2" in fields
+    assert fields["number1"][0] is Optional[int]
+    assert fields["number1"][1].const is None
+    assert fields["number1"][1].default is None
+    assert fields["number1"][1].default_factory is None
+    assert fields["number2"][0] is Optional[int]
+    assert fields["number2"][1].const is None
+    assert fields["number2"][1].default is None
+    assert fields["number2"][1].default_factory is None
+
+    assert getattr(test, "id", 3) is None
+    assert getattr(test, "number1", 3) is None
+    assert getattr(test, "number2", 3) is None
+
+    assert TestPydantic.schema() == {
+        "title": "Test",
+        "type": "object",
+        "properties": {
+            "id": {"title": "Id", "type": "integer"},
+            "number1": {"title": "Number1", "type": "integer"},
+            "number2": {"title": "Number2", "type": "integer"},
+        },
+    }
 
 
 def test_all_columns_become_optional_and_nullable_with_none_as_default() -> None:
