@@ -29,6 +29,10 @@ def test_default_and_default_factory_and_const_become_none() -> None:
     assert "id" in fields
     assert "number1" in fields
     assert "number2" in fields
+    assert fields["id"][0] is Optional[int]
+    assert fields["id"][1].const is None
+    assert fields["id"][1].default is None
+    assert fields["id"][1].default_factory is None
     assert fields["number1"][0] is Optional[int]
     assert fields["number1"][1].const is None
     assert fields["number1"][1].default is None
