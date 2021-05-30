@@ -21,7 +21,9 @@ def test_default_and_default_factory_and_const_become_none() -> None:
 
     # Act
     fields = fields_from(Test, transform=nonify)
-    TestPydantic = pydantic.create_model(Test.__name__, **fields)  # type: ignore[arg-type, var-annotated]
+    TestPydantic = pydantic.create_model(  # pylint: disable=invalid-name
+        Test.__name__, **fields  # type: ignore[arg-type, var-annotated]
+    )
     test = TestPydantic()
 
     # Assert
