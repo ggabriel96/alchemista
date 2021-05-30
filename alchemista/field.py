@@ -49,9 +49,11 @@ def infer_python_type(column: Column) -> type:  # type: ignore[type-arg]
 
     if python_type is list and hasattr(column.type, "item_type"):
         item_type = _extract_python_type(column.type.item_type)
-        return List[item_type] if not column.nullable else Optional[List[item_type]]  # type: ignore[valid-type]
+        if column.nullable:
+            return Optional[List[item_type]]  # type: ignore[valid-type, return-value]
+        return List[item_type]  # type: ignore[valid-type]
 
-    return python_type if not column.nullable else Optional[python_type]  # type: ignore[valid-type]
+    return python_type if not column.nullable else Optional[python_type]  # type: ignore[return-value]
 
 
 def _get_default_scalar(column: Column) -> Any:  # type: ignore[type-arg]
