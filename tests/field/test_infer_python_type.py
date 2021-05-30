@@ -1,10 +1,10 @@
 import datetime as dt
 import enum
 from decimal import Decimal
-from typing import List
+from typing import List, Optional
 
 import pytest
-from sqlalchemy import Column, types
+from sqlalchemy import Column, Integer, types
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy_utc import UtcDateTime
 
@@ -13,7 +13,7 @@ from alchemista.field import infer_python_type
 
 def test_fallback_to_python_type_from_impl() -> None:
     # Arrange
-    column = Column("column", UtcDateTime)
+    column = Column("column", UtcDateTime, nullable=False)
 
     # Act
     inferred_type = infer_python_type(column)
@@ -22,13 +22,35 @@ def test_fallback_to_python_type_from_impl() -> None:
     assert inferred_type is dt.datetime
 
 
+def test_nullable_scalar_becomes_optional_scalar() -> None:
+    # Arrange
+    column = Column("column", Integer, nullable=True)
+
+    # Act
+    inferred_type = infer_python_type(column)
+
+    # Assert
+    assert inferred_type is Optional[int]
+
+
+def test_nullable_array_becomes_optional_list() -> None:
+    # Arrange
+    column = Column("column", types.ARRAY(Integer), nullable=True)
+
+    # Act
+    inferred_type = infer_python_type(column)
+
+    # Assert
+    assert inferred_type is Optional[List[int]]
+
+
 def test_enum() -> None:
     # Arrange
     class Bool(str, enum.Enum):
         FALSE = "F"
         TRUE = "T"
 
-    boolean = Column("bool", types.Enum(Bool))
+    boolean = Column("bool", types.Enum(Bool), nullable=False)
 
     # Act
     inferred_type = infer_python_type(boolean)
@@ -87,7 +109,7 @@ def test_enum() -> None:
 )
 def test_common_types(sa_type: types.TypeEngine, expected_type: type) -> None:  # type: ignore[type-arg]
     # Arrange
-    column = Column("column", sa_type)
+    column = Column("column", sa_type, nullable=False)
 
     # Act
     inferred_type = infer_python_type(column)
@@ -146,7 +168,7 @@ def test_common_types(sa_type: types.TypeEngine, expected_type: type) -> None:  
 )
 def test_array(sa_type: types.TypeEngine, expected_type: type) -> None:  # type: ignore[type-arg]
     # Arrange
-    array = Column("array", types.ARRAY(item_type=sa_type))
+    array = Column("array", types.ARRAY(item_type=sa_type), nullable=False)
 
     # Act
     inferred_type = infer_python_type(array)
@@ -161,7 +183,7 @@ def test_enum_array() -> None:
         FALSE = "F"
         TRUE = "T"
 
-    array = Column("array", types.ARRAY(item_type=types.Enum(Bool)))
+    array = Column("array", types.ARRAY(item_type=types.Enum(Bool)), nullable=False)
 
     # Act
     inferred_type = infer_python_type(array)
