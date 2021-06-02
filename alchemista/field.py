@@ -30,7 +30,7 @@ class Info(TypedDict, total=False):
     title: str
 
 
-def _extract_python_type(type_engine: TypeEngine) -> type:  # type: ignore[type-arg]
+def extract_python_type(type_engine: TypeEngine) -> type:  # type: ignore[type-arg]
     try:
         # the `python_type` seems to always be a @property-decorated method,
         # so only checking its existence is not enough
@@ -41,7 +41,7 @@ def _extract_python_type(type_engine: TypeEngine) -> type:  # type: ignore[type-
 
 def infer_python_type(column: Column) -> type:  # type: ignore[type-arg]
     try:
-        python_type = _extract_python_type(column.type)
+        python_type = extract_python_type(column.type)
     except (AttributeError, NotImplementedError) as ex:
         raise RuntimeError(
             f"Could not infer the Python type for {column}."
@@ -49,7 +49,7 @@ def infer_python_type(column: Column) -> type:  # type: ignore[type-arg]
         ) from ex
 
     if python_type is list and hasattr(column.type, "item_type"):
-        item_type = _extract_python_type(column.type.item_type)
+        item_type = extract_python_type(column.type.item_type)
         if column.nullable:
             return Optional[List[item_type]]  # type: ignore[valid-type, return-value]
         return List[item_type]  # type: ignore[valid-type]
