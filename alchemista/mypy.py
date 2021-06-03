@@ -46,9 +46,7 @@ def fields_from_function_callback(ctx: FunctionContext) -> Type:
         include = ctx.args[2]
         if exclude and include:
             ctx.api.fail("`exclude` and `include` are mutually-exclusive", context=ctx.context, code=CALL_ARG)
-        fields = dict()
         cls = ctx.arg_types[0][0].ret_type.type
-        field_info_type = ctx.default_return_type.args[-1].items[-1]
         candidate_nodes = (node for node in cls.defn.defs.body if _is_expected_column_assignment(node))
         if exclude:
             exclude_names = [node.value for node in exclude[0].items]
@@ -60,6 +58,8 @@ def fields_from_function_callback(ctx: FunctionContext) -> Type:
             candidate_nodes = (
                 node for node in candidate_nodes if _column_name(cast(AssignmentStmt, node)) in include_names
             )
+        fields = dict()
+        field_info_type = ctx.default_return_type.args[-1].items[-1]
         for node in candidate_nodes:
             attr_name = _column_name(node)
             attr_type = infer_from_column_assignment(node)
