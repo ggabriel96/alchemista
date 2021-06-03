@@ -2,6 +2,7 @@ from importlib import import_module
 from typing import Any, Callable, Optional, Tuple
 from typing import Type as TypingType
 
+from mypy.errorcodes import CALL_ARG
 from mypy.nodes import AssignmentStmt, CallExpr, NameExpr, StrExpr, Node
 from mypy.plugin import FunctionContext, Plugin
 from mypy.types import CallableType, TupleType, Type, TypedDictType
@@ -38,6 +39,10 @@ def _is_expected_column_assignment(node: Node) -> bool:
 
 def fields_from_function_callback(ctx: FunctionContext) -> Type:
     if isinstance(ctx.arg_types[0][0], CallableType):
+        exclude = ctx.args[1]
+        include = ctx.args[2]
+        if exclude and include:
+            ctx.api.fail("`exclude` and `include` are mutually-exclusive", context=ctx.context, code=CALL_ARG)
         fields = dict()
         cls = ctx.arg_types[0][0].ret_type.type
         field_info_type = ctx.default_return_type.args[-1].items[-1]
