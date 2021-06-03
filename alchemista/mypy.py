@@ -11,6 +11,11 @@ from sqlalchemy.sql import type_api
 from alchemista.field import extract_python_type
 
 
+FIELDS_FROM_QUALNAME = "alchemista.field.fields_from"
+TUPLE_QUALNAME = "builtins.tuple"
+TYPED_DICT_QUALNAME = "typing_extensions._TypedDict"
+
+
 def infer_from_column_assignment(stmt: AssignmentStmt) -> TypingType:
     col_args = stmt.rvalue.args
     if len(col_args) == 1 and isinstance(col_args[0], CallExpr):
@@ -65,16 +70,16 @@ def fields_from_function_callback(ctx: FunctionContext) -> Type:
             attr_type = infer_from_column_assignment(node)
             fields[attr_name] = TupleType(
                 [ctx.api.named_type(attr_type.__qualname__), field_info_type],
-                fallback=ctx.api.named_type("builtins.tuple"),
+                fallback=ctx.api.named_type(TUPLE_QUALNAME),
             )
-        fallback = ctx.api.named_type("typing_extensions._TypedDict")
+        fallback = ctx.api.named_type(TYPED_DICT_QUALNAME)
         return TypedDictType(fields, required_keys=set(fields.keys()), fallback=fallback)
     return ctx.default_return_type
 
 
 class AlchemistaPlugin(Plugin):
     def get_function_hook(self, fullname: str) -> Optional[Callable[[FunctionContext], Type]]:
-        if fullname == "alchemista.field.fields_from":
+        if fullname == FIELDS_FROM_QUALNAME:
             return fields_from_function_callback
         return None
 
