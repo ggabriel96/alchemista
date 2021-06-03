@@ -4,7 +4,7 @@ from typing import Type as TypingType
 
 from mypy.nodes import AssignmentStmt, CallExpr, NameExpr, StrExpr
 from mypy.plugin import FunctionContext, Plugin
-from mypy.types import CallableType, Type
+from mypy.types import CallableType, Type, TypedDictType
 from sqlalchemy.sql import type_api
 
 from alchemista.field import extract_python_type
@@ -39,8 +39,9 @@ def fields_from_function_callback(ctx: FunctionContext) -> Type:
                 and not node.lvalues[0].name.startswith("_")
             ):
                 attr_name, attr_type = infer_from_column_assignment(node)
-                fields[attr_name] = attr_type
-        # return TypedDictType(fields, required_keys=set(fields.keys()), fallback=None)
+                fields[attr_name] = ctx.api.named_type(attr_type.__qualname__)
+        fallback = ctx.api.named_type("typing_extensions._TypedDict")
+        return TypedDictType(fields, required_keys=set(fields.keys()), fallback=fallback)
     return ctx.default_return_type
 
 
