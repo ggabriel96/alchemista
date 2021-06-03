@@ -1,5 +1,5 @@
 from importlib import import_module
-from typing import Any, Callable, Optional, Tuple
+from typing import Any, Callable, Optional, cast
 from typing import Type as TypingType
 
 from mypy.errorcodes import CALL_ARG
@@ -50,6 +50,16 @@ def fields_from_function_callback(ctx: FunctionContext) -> Type:
         cls = ctx.arg_types[0][0].ret_type.type
         field_info_type = ctx.default_return_type.args[-1].items[-1]
         candidate_nodes = (node for node in cls.defn.defs.body if _is_expected_column_assignment(node))
+        if exclude:
+            exclude_names = [node.value for node in exclude[0].items]
+            candidate_nodes = (
+                node for node in candidate_nodes if _column_name(cast(AssignmentStmt, node)) not in exclude_names
+            )
+        elif include:
+            include_names = [node.value for node in include[0].items]
+            candidate_nodes = (
+                node for node in candidate_nodes if _column_name(cast(AssignmentStmt, node)) in include_names
+            )
         for node in candidate_nodes:
             attr_name = _column_name(node)
             attr_type = infer_from_column_assignment(node)
