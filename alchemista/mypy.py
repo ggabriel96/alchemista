@@ -11,8 +11,7 @@ from sqlalchemy.sql import type_api
 from alchemista.field import extract_python_type
 
 
-def infer_from_column_assignment(stmt: AssignmentStmt) -> Tuple[str, TypingType]:
-    col_name = stmt.lvalues[0].name
+def infer_from_column_assignment(stmt: AssignmentStmt) -> TypingType:
     col_args = stmt.rvalue.args
     if len(col_args) == 1 and isinstance(col_args[0], CallExpr):
         col_args = col_args[0].args
@@ -22,10 +21,14 @@ def infer_from_column_assignment(stmt: AssignmentStmt) -> Tuple[str, TypingType]
     try:
         col_type = getattr(col_type_module, col_type_node.name)
         col_type_instance = type_api.to_instance(col_type)
-        return col_name, extract_python_type(col_type_instance)
+        return extract_python_type(col_type_instance)
     except AttributeError:
         # TODO: add some warning?
-        return col_name, Any
+        return Any
+
+
+def _column_name(stmt: AssignmentStmt) -> str:
+    return stmt.lvalues[0].name
 
 
 def _is_expected_column_assignment(node: Node) -> bool:
@@ -48,7 +51,8 @@ def fields_from_function_callback(ctx: FunctionContext) -> Type:
         field_info_type = ctx.default_return_type.args[-1].items[-1]
         candidate_nodes = (node for node in cls.defn.defs.body if _is_expected_column_assignment(node))
         for node in candidate_nodes:
-            attr_name, attr_type = infer_from_column_assignment(node)
+            attr_name = _column_name(node)
+            attr_type = infer_from_column_assignment(node)
             fields[attr_name] = TupleType(
                 [ctx.api.named_type(attr_type.__qualname__), field_info_type],
                 fallback=ctx.api.named_type("builtins.tuple"),
