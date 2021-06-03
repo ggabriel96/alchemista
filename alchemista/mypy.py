@@ -2,7 +2,7 @@ from importlib import import_module
 from typing import Any, Callable, Optional, Tuple
 from typing import Type as TypingType
 
-from mypy.nodes import AssignmentStmt, CallExpr, NameExpr, StrExpr
+from mypy.nodes import AssignmentStmt, CallExpr, NameExpr, StrExpr, Node
 from mypy.plugin import FunctionContext, Plugin
 from mypy.types import CallableType, TupleType, Type, TypedDictType
 from sqlalchemy.sql import type_api
@@ -27,23 +27,27 @@ def infer_from_column_assignment(stmt: AssignmentStmt) -> Tuple[str, TypingType]
         return col_name, Any
 
 
+def _is_expected_column_assignment(node: Node) -> bool:
+    return (
+        isinstance(node, AssignmentStmt)
+        and len(node.lvalues) == 1
+        and isinstance(node.lvalues[0], NameExpr)
+        and not node.lvalues[0].name.startswith("_")
+    )
+
+
 def fields_from_function_callback(ctx: FunctionContext) -> Type:
     if isinstance(ctx.arg_types[0][0], CallableType):
         fields = dict()
         cls = ctx.arg_types[0][0].ret_type.type
         field_info_type = ctx.default_return_type.args[-1].items[-1]
-        for node in cls.defn.defs.body:
-            if (
-                isinstance(node, AssignmentStmt)
-                and len(node.lvalues) == 1
-                and isinstance(node.lvalues[0], NameExpr)
-                and not node.lvalues[0].name.startswith("_")
-            ):
-                attr_name, attr_type = infer_from_column_assignment(node)
-                fields[attr_name] = TupleType(
-                    [ctx.api.named_type(attr_type.__qualname__), field_info_type],
-                    fallback=ctx.api.named_type("builtins.tuple"),
-                )
+        candidate_nodes = (node for node in cls.defn.defs.body if _is_expected_column_assignment(node))
+        for node in candidate_nodes:
+            attr_name, attr_type = infer_from_column_assignment(node)
+            fields[attr_name] = TupleType(
+                [ctx.api.named_type(attr_type.__qualname__), field_info_type],
+                fallback=ctx.api.named_type("builtins.tuple"),
+            )
         fallback = ctx.api.named_type("typing_extensions._TypedDict")
         return TypedDictType(fields, required_keys=set(fields.keys()), fallback=fallback)
     return ctx.default_return_type
