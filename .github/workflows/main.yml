@@ -71,7 +71,7 @@ jobs:
 
       - name: isort
         if: always()
-        run: poetry run isort --check-only --verbose .
+        run: poetry run isort --check-only --verbose alchemista/ examples/ tests/
 
       - name: Mypy
         if: always()
