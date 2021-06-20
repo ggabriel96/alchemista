@@ -14,7 +14,7 @@ SQLAlchemy = "^1.4.14"
 Deprecated = "^1.2.12"
 
 [tool.poetry.dev-dependencies]
-black = "^21.5b0"
+black = "^21.6b0"
 isort = "^5.8.0"
 mypy = "^0.812"
 pre-commit = "^2.12.1"
