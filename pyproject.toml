@@ -48,6 +48,22 @@ strict = true
 module = ["sqlalchemy.*", "sqlalchemy_utc.*"]
 ignore_missing_imports = true
 
+[tool.pylint.master]
+extension-pkg-allow-list = ["pydantic"]
+
+[tool.pylint.messages-control]
+disable = [
+  "duplicate-code",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "missing-module-docstring",
+  "too-few-public-methods",
+]
+
+[tool.pylint.format]
+max-line-length = 120
+good-names = ["_", "db", "ex", "id", "of", "pk", "to"]
+
 [tool.semantic_release]
 branch = "main"
 build_command = "poetry build"
