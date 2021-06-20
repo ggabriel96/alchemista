@@ -38,6 +38,16 @@ line-length = 120
 profile = "black"
 line_length = 120
 
+[tool.mypy]
+plugins = ["pydantic.mypy", "sqlalchemy.ext.mypy.plugin"]
+pretty = true
+show_error_codes = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["sqlalchemy.*", "sqlalchemy_utc.*"]
+ignore_missing_imports = true
+
 [tool.semantic_release]
 branch = "main"
 build_command = "poetry build"
