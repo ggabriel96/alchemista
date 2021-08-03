@@ -1,5 +1,6 @@
 from typing import Any, Callable, Container, Dict, List, Optional, Tuple, TypedDict, cast
 
+from deprecated import deprecated
 from pydantic import Field
 from pydantic.fields import FieldInfo
 from sqlalchemy import Column, Enum, inspect
@@ -104,7 +105,20 @@ def make_field(column: Column) -> FieldInfo:  # type: ignore[type-arg]
     return cast(FieldInfo, Field(default, **info))  # type: ignore[misc]
 
 
-def fields_from(
+def fields_from(db_model: type) -> Dict[str, FieldInfo]:
+    mapper = inspect(db_model)
+    candidate_attrs = mapper.attrs
+    fields = {}
+    for attr in candidate_attrs:
+        if isinstance(attr, ColumnProperty) and attr.columns:
+            name = attr.key
+            column = attr.columns[0]
+            fields[name] = make_field(column)
+    return fields
+
+
+@deprecated("Please migrate to using `field.fields_from`", version="0.4.0")
+def fields_from_deprecated(
     db_model: type,
     *,
     exclude: Optional[Container[str]] = None,

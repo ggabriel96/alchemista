@@ -5,7 +5,7 @@ from pydantic.fields import FieldInfo
 
 from alchemista import func
 from alchemista.config import OrmConfig
-from alchemista.field import fields_from
+from alchemista.field import fields_from_deprecated as fields_from
 
 
 def model_from(
