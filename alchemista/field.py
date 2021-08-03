@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Callable, Container, Dict, List, Optional, Tuple, TypedDict, cast
 
 from deprecated import deprecated
@@ -115,6 +116,13 @@ def fields_from(db_model: type) -> Dict[str, FieldInfo]:
             column = attr.columns[0]
             fields[name] = make_field(column)
     return fields
+
+
+def override(field: FieldInfo, info: Info) -> FieldInfo:
+    field_new = copy.deepcopy(field)
+    for key, value in info.items():
+        setattr(field_new, key, value)
+    return field_new
 
 
 @deprecated("Please migrate to using `field.fields_from`", version="0.4.0")
