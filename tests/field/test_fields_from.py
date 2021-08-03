@@ -1,5 +1,5 @@
 from pydantic.fields import FieldInfo
-from sqlalchemy import Column, Float, Integer, String, Text, Boolean
+from sqlalchemy import Boolean, Column, Float, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
 from alchemista.field import fields_from
